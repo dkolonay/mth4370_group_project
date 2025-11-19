@@ -1,0 +1,27 @@
+# unrelated
+formating.txt
+
+# enviornments/configs
+*.env
+
+# IDEs
+.idea
+.idea/
+.vscode
+.vscode/
+
+#python env
+.venv
+.venv/
+venv/
+
+# Bytecode caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+
+# Logs
+*.log
