@@ -1,0 +1,13 @@
+/* Container for the whole page */
+div {
+  font-family: Arial, sans-serif;
+}
+
+.movie-list{
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 2rem;
+  width: 90vw;
+  margin: auto;
+}
+

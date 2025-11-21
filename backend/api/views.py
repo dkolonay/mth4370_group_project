@@ -31,13 +31,34 @@ class NoteDelete(generics.DestroyAPIView):
         return Note.objects.filter(author=user)
     
 
+
+
 class DisplayMovies(generics.ListCreateAPIView):
     serializer_class = MovieSerializer
     permission_classes = [AllowAny]
 
+    # def get_queryset(self):
+    #     print("test")
+    #     return Movie.objects.all().order_by('imdb_rating')[:100]
+
+    def filter_by_genre(self, queryset, genre):
+        return queryset.filter(genres__icontains=genre)
+
     def get_queryset(self):
-        print("test")
-        return Movie.objects.all().order_by('imdb_rating')[:100]
+        queryset = Movie.objects.all()
+
+        genres = self.request.query_params.get("genres")
+        if genres != None:
+            for genre in genres.split(","):
+                queryset = self.filter_by_genre(queryset, genre)
+        
+        sort_by = self.request.query_params.get("sort_by")
+        if sort_by:
+            print(sort_by)
+            queryset = queryset.order_by(sort_by, "-popularity")
+        else:
+            queryset = queryset.order_by("-popularity")
+        return queryset[:100]
 
 
 class CreateUserView(generics.CreateAPIView):

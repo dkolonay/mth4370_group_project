@@ -12,67 +12,36 @@ class Note(models.Model):
         return self.title
     
 
-# class Movie(models.Model):
-#     _id = models.CharField(max_length = 255)
-#     genres = ArrayField(
-#         models.CharField(max_length = 255),
-#         blank=True,
-#         null=True
-#     )
-#     image_url = models.CharField(max_length = 255, blank=True, null=True)
-#     imdb_id = models.CharField(max_length = 255, blank=True, null=True)
-#     imdb_link = models.URLField(max_length = 2048, blank=True, null=True)
-#     movie_id = models.CharField(max_length = 255)
-#     movie_title = models.CharField(max_length = 255)
-#     original_language = models.CharField(max_length = 255, blank=True, null=True)
-#     overview = models.TextField()
-#     popularity = models.FloatField(blank=True, null=True)
-#     production_countries = ArrayField(
-#         models.CharField(max_length = 255),
-#         blank = True,
-#         null = True
-#     )
-#     release_data = models.CharField(max_length= 255, blank=True, null= True)
-#     runtime = models.CharField(max_length = 255, blank=True, null=True)
-#     spoken_languages = ArrayField(
-#         models.CharField(max_length = 255),
-#         blank = True,
-#         null = True
-#     )
-#     tmdb_id = models.CharField(max_length=255, blank=True, null=True) #might be of a problematic type
-#     tmdb_link = models.URLField(max_length = 2048, blank= True, null = True)
-#     vote_average = models.CharField(max_length= 255, blank=True, null= True)
-#     vote_count = models.CharField(max_length= 255, blank=True, null= True)
-#     year_released = models.CharField(max_length= 255, blank=True, null= True)
-
-#     def __str__(self):
-#         return self.movie_title
-    
-
 class Movie(models.Model):
 
     class Meta:
         managed=False
         db_table = 'api_movie'
 
-
-    title = models.CharField(max_length = 255,primary_key=True)
-    poster_link = models.CharField(max_length = 255, blank=True, null=True)
-    release_year = models.CharField(max_length = 255, blank=True, null=True)
-    certif = models.CharField(max_length = 255, blank=True, null=True)
-    runtime = models.CharField(max_length = 255, blank=True, null=True)
-    genres = models.CharField(max_length = 255, blank=True, null=True)
-    imdb_rating = models.CharField(max_length = 255, blank=True, null=True)
-    overview = models.CharField(max_length = 255, blank=True, null=True)
-    meta_score = models.CharField(max_length = 255, blank=True, null=True)
-    director = models.CharField(max_length = 255, blank=True, null=True)
-    star_one = models.CharField(max_length = 255, blank=True, null=True)
-    star_two = models.CharField(max_length = 255, blank=True, null=True)
-    star_three = models.CharField(max_length = 255, blank=True, null=True)
-    star_four = models.CharField(max_length = 255, blank=True, null=True)
-    num_votes = models.CharField(max_length = 255, blank=True, null=True)
-    gross = models.CharField(max_length = 255, blank=True, null=True)
-    
+    id = models.IntegerField(primary_key = True)
+    title = models.CharField()
+    vote_average = models.FloatField()
+    vote_count = models.IntegerField()
+    # _status = models.CharField()
+    release_date = models.CharField()
+    revenue = models.IntegerField()
+    runtime = models.IntegerField()
+    # adult = models.BooleanField()
+    backdrop_path = models.CharField()
+    budget = models.IntegerField()
+    # homepage = models.URLField()
+    # imdb_id = models.CharField()
+    # original_language = models.CharField()
+    # original_title = models.CharField()
+    overview = models.TextField()
+    popularity = models.FloatField()
+    poster_path = models.CharField()
+    tagline = models.TextField()
+    genres = models.CharField()
+    # production_companies = models.CharField()
+    # production_countries = models.CharField()
+    # spoken_languages = models.CharField()
+    keywords = models.CharField()
 
     def __str__(self):
         return self.title

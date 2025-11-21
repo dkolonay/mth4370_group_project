@@ -1,9 +1,9 @@
 import { useState } from "react";
-import api from "../api";
-import { useNavigate } from "react-router-dom";
-import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
-import "../styles/Form.css"
-import LoadingIndicator from "./LoadingIndicator";
+import api from "../../api";
+import { useNavigate, Link } from "react-router-dom";
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "../../constants";
+import "./Form.css"
+import LoadingIndicator from "../LoadingIndicator/LoadingIndicator";
 
 const Form = ({ route, method }) => {
   const [username, setUsername] = useState("");
@@ -11,7 +11,7 @@ const Form = ({ route, method }) => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const name = method === "login" ? "Login" : "Register";
+  const isLogin = method === "login";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,7 +20,7 @@ const Form = ({ route, method }) => {
 
     try {
         const res = await api.post(route, {username, password})
-        if(method === "login"){
+        if(isLogin){
             localStorage.setItem(ACCESS_TOKEN, res.data.access)
             localStorage.setItem(REFRESH_TOKEN, res.data.refresh)
             navigate("/")
@@ -37,7 +37,7 @@ const Form = ({ route, method }) => {
 
   return (
     <form onSubmit={handleSubmit} className={"form-container"}>
-      <h1>{name}</h1>
+      <h1>{isLogin? "Login": "Register"}</h1>
       <input
         type="text"
         className={"form-input"}
@@ -58,8 +58,9 @@ const Form = ({ route, method }) => {
       />
       {loading && <LoadingIndicator/>}
       <button className={"form-button"} type={"submit"}>
-        {name}
+        {isLogin? "Login": "Register"}
       </button>
+      <span>{isLogin ? "Don't have an account? " : "Already have an account? "}<Link to={isLogin ? "/register" : "/login"}> {isLogin ? "Register" : "Login"} here</Link></span>
     </form>
   );
 };

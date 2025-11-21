@@ -1,0 +1,26 @@
+.filter-select-item{
+  list-style: none;
+  background-color: white;
+  border: 2px solid rgb(73, 101, 179);
+  border-radius: 36px;
+  height: 2rem;
+  width: 110px;
+  height: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.filter-selected, .filter-select-item:hover{
+    background-color: rgb(73, 101, 179);
+    color: white;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.filter-select-item p {
+    text-align: center;
+}

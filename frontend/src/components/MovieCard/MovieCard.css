@@ -1,6 +1,16 @@
 .movie-card{
     box-shadow: 3px 3px 5px gray;
     text-align: center;
+    width: 100%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.movie-card:hover{
+    cursor:pointer;
+    transform: scale(1.1);
+    transform-origin: center center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 5px 5px 10px rgb(202, 202, 202);
 }
 
 .movie-card-image-container{
@@ -11,6 +21,7 @@
     padding: 0;
     border: none;
     position: relative;
+    overflow: hidden;
 }
 
 .movie-card img{
@@ -22,5 +33,11 @@
     position: absolute;
     left: 0;
     top: 0;
+    aspect-ratio: 67/98;
+}
+
+.movie-card-title{
+    height: 3rem;
+
 }
 
