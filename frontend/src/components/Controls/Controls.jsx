@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import "./Controls.css";
 import FilterSelectItem from "../FilterSelectItem/FilterSelectItem";
+import Search from "../Search/Search";
 
 const Controls = ({ getMovies }) => {
   const [sortType, setSortType] = useState("-popularity");
-
+  const [searchQuery, setSearchQuery] = useState("")
   const [genres, setGenres] = useState([
     { name: "Action", selected: false },
     { name: "Adventure", selected: false },
@@ -31,12 +32,16 @@ const Controls = ({ getMovies }) => {
     let queryString = `?sort_by=${sortType}`;
     const selectedGenreList = genres.filter((genre)=>genre.selected).map((genre)=>genre.name).join(",")
 
+    if(searchQuery){
+      queryString += `&search=${searchQuery}`
+    }
+
     if (selectedGenreList.length > 0){
       queryString += `&genres=${selectedGenreList}`
     }
 
     getMovies(queryString);
-  }, [genres, sortType]);
+  }, [genres, sortType, searchQuery]);
 
   const toggleGenre = (name)=>{
     setGenres((prevGenres)=>{
@@ -47,10 +52,11 @@ const Controls = ({ getMovies }) => {
     })
   }
 
-  return (
+  return (<>
+    <Search setSearchQuery={setSearchQuery}/>
     <form className={"controls"}>
+      
       <label htmlFor="sort">Sort by:</label>
-
       <select
         name="sort"
         id="sort"
@@ -78,6 +84,7 @@ const Controls = ({ getMovies }) => {
         })}
       </ul>
     </form>
+    </>
   );
 };
 

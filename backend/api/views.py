@@ -43,6 +43,9 @@ class DisplayMovies(generics.ListCreateAPIView):
 
     def filter_by_genre(self, queryset, genre):
         return queryset.filter(genres__icontains=genre)
+    
+    def search_filter(self, queryset, searchQuery):
+        return queryset.filter(title__icontains=searchQuery)
 
     def get_queryset(self):
         queryset = Movie.objects.all()
@@ -51,6 +54,10 @@ class DisplayMovies(generics.ListCreateAPIView):
         if genres != None:
             for genre in genres.split(","):
                 queryset = self.filter_by_genre(queryset, genre)
+
+        searchQuery = self.request.query_params.get("search")
+        if searchQuery != None:
+            queryset = self.search_filter(queryset, searchQuery)
         
         sort_by = self.request.query_params.get("sort_by")
         if sort_by:
