@@ -1,8 +1,8 @@
 # Initial infrastructure for the project
 
 ## Frontend
-    +React
-    +react router for pagination
+    + React
+    + react router for pagination
 
 ## Backend
     +Django
