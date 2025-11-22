@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from rest_framework import generics
 from .serializers import UserSerializer, NoteSerializer, MovieSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.response import Response
+from rest_framework import status
 
 from .models import Note
 from .models import Movie
@@ -31,15 +33,24 @@ class NoteDelete(generics.DestroyAPIView):
         return Note.objects.filter(author=user)
     
 
+class DisplayMovie(generics.ListCreateAPIView):
+    serializer_class = MovieSerializer
+    permission_classes = [AllowAny]
 
+    def get(self, request, pk):
+        try:
+            movie = Movie.objects.get(pk=pk)
+            serializer = MovieSerializer(movie)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Movie.DoesNotExist:
+            return Response({"detail": "Data not found."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
 
 class DisplayMovies(generics.ListCreateAPIView):
     serializer_class = MovieSerializer
     permission_classes = [AllowAny]
-
-    # def get_queryset(self):
-    #     print("test")
-    #     return Movie.objects.all().order_by('imdb_rating')[:100]
 
     def filter_by_genre(self, queryset, genre):
         return queryset.filter(genres__icontains=genre)
@@ -61,11 +72,31 @@ class DisplayMovies(generics.ListCreateAPIView):
         
         sort_by = self.request.query_params.get("sort_by")
         if sort_by:
-            print(sort_by)
             queryset = queryset.order_by(sort_by, "-popularity")
         else:
             queryset = queryset.order_by("-popularity")
         return queryset[:100]
+    
+
+class RecommendationsByDescription(generics.ListCreateAPIView):
+    serializer_class = MovieSerializer
+    permission_classes = [AllowAny]
+   
+    def get_queryset(self):
+        #when model is connected, we will run the description through the model to
+        #produce a list of movie ids that best fit the description
+
+        descriptionQuery = self.request.query_params.get("description")
+        # list_that_model_returns = run_description_model(descriptionQuery)
+        # queryset = Movie.objects.filter(id__in=list_that_model_returns)
+
+        print(descriptionQuery)
+
+        queryset = Movie.objects.order_by("-popularity")[:6] #dummy response
+
+        return queryset
+    
+
 
 
 class CreateUserView(generics.CreateAPIView):

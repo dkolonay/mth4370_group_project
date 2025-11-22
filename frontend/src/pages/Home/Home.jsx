@@ -1,38 +1,24 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from 'react-router-dom';
 import api from "../../api";
 // import Note from "../components/Note";
-import MovieCard from "../../components/MovieCard/MovieCard";
+import MovieList from "../../components/MovieList/MovieList";
 import PageContainer from "../../components/PageContainer/PageContainer";
 import Controls from "../../components/Controls/Controls";
 
 import "./Home.css";
 
-/*  https://a.ltrbxd.com/resized/
-    film-poster/4/6/4/4/4/0/464440-football-freaks-0-230-0-345-crop
-    .jpg
-*/
-
-//https://a.ltrbxd.com/resized/film-poster/4/6/4/4/4/0/464440-football-freaks-0-230-0-345-crop.jpg
-
 const Home = () => {
-  // const [notes, setNotes] = useState([]);
-  // const [content, setContent] = useState("");
-  // const [title, setTitle] = useState("");
   const [movies, setMovies] = useState([]);
-  const [searchParams, setSearchParams] = useSearchParams()
 
   useEffect(() => {
     getMovies();
   }, []);
 
   const getMovies = (queryString = "") => {
-    // console.log(`/api/movies/?${searchParams}`)
     api
       .get(`/api/movies/${queryString}`)
       .then((res) => res.data)
       .then((data) => {
-        console.log("got movies")
         setMovies(data);
       })
       .catch((err) => console.error(err));
@@ -41,18 +27,14 @@ const Home = () => {
   return (
     <PageContainer>
       <Controls getMovies={getMovies}/>
-      <div className={"movie-list"}>
-        {movies.map((movie) => {
-          return <MovieCard movie_data={movie} key={movie.id}/>;
-        })}
-      </div>
+      <MovieList movies={movies} cardType={"link"}/>
     </PageContainer>
   );
 };
 
 export default Home;
 
-
+  //Demo api calls from practicing Django (use as template later)
   // const getNotes = () => {
   //   api
   //     .get("/api/notes/")

@@ -1,8 +1,8 @@
 .nav-container{
     background-color: rgb(31, 31, 76);
     height: 80px;
-    width: 100%;
-    padding: 10px 30px;
+    width: 100vw;
+    padding: 10px 35px;
     margin-bottom: 2rem;
 
 }
@@ -18,6 +18,14 @@ nav{
 nav a {
     text-decoration: none;
     color: white;
+}
+
+.navbar-standard-links{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    gap: 1rem;
 }
 
 .title-logo-link{
