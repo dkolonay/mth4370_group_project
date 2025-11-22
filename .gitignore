@@ -1,7 +1,3 @@
-# unrelated
-formating.txt
-formating_organized.txt
-
 # enviornments/configs
 *.env
 
@@ -26,3 +22,12 @@ build/
 
 # Logs
 *.log
+
+#data
+*.zip
+*.csv
+*.txt
+*.txt.pt
+*.jpg
+*.png
+*.pkl
