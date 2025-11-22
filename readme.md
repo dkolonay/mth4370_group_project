@@ -1,15 +1,15 @@
 # Initial infrastructure for the project
 
 ## Frontend
-    + React
-    + react router for pagination
+    * React
+    * react router for pagination
 
 ## Backend
-    +Django
+    * Django
 
 ## DB
-    +postgresql
-    +data currently held locally. file was too large to push to github
+    * postgresql
+    * data currently held locally. file was too large to push to github
 
 ## Containerized with Docker
 
