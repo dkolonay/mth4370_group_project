@@ -33,6 +33,10 @@ import aiohttp
 from PIL import Image
 from io import BytesIO
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))
+DIR = os.path.join(PROJECT_ROOT, "data", "processed")
+
 CONCURRENCY = 20   # try 20–50;
 
 def make_url(path, size="w185"):
@@ -113,7 +117,7 @@ async def download_all_async(df):
         return poster_paths, backdrop_paths
 
 if __name__ == '__main__':
-    df = pd.read_csv(os.path.abspath("../data/processed/movie_dataset_cleaned.csv"))
+    df = pd.read_csv(os.path.join(DIR, "movie_dataset_cleaned.csv"))
 
     print('[1] removing revenue and budget columns')
     df.drop(['revenue', 'budget'], axis=1, inplace=True)
@@ -169,4 +173,4 @@ if __name__ == '__main__':
     df[scale_features] = scaler.fit_transform(df[scale_features])
 
     print('[9] saving final processed CSV...')
-    df.to_csv(os.path.abspath("../data/processed/movie_dataset_processed.csv"), index=False)
+    df.to_csv(os.path.join(DIR, "movie_dataset_processed.csv"), index=False)

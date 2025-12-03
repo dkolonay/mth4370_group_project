@@ -4,7 +4,11 @@ Organizes the cleaning process from the Jupyter notebook
 
 import pandas as pd
 import os
-import re
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))
+DIR = os.path.join(PROJECT_ROOT, "data", "processed")
+RAW_DIR = os.path.join(PROJECT_ROOT, "data", "raw")
 
 def remove_duplicates(cols, df):
     # ranking
@@ -17,7 +21,7 @@ def remove_duplicates(cols, df):
 
 if __name__ == "__main__":
     # Load data
-    path = os.path.join(os.getcwd(), '..', 'data', 'raw', 'TMDB_movie_dataset_v11.csv')
+    path = os.path.join(RAW_DIR, 'TMDB_movie_dataset_v11.csv')
     df = pd.read_csv(path)
 
     # Define columns to ignore
@@ -87,5 +91,4 @@ if __name__ == "__main__":
     print(duplicates_per_col)
 
     print('saving cleaned dataset...')
-    output_path = os.path.abspath('../data/processed')
-    post_filtered_df.to_csv(output_path + '/movie_dataset_cleaned.csv', index=False)
+    post_filtered_df.to_csv(os.path.join(DIR, 'movie_dataset_cleaned.csv'), index=False)

@@ -6,8 +6,12 @@ import pandas as pd
 import pickle
 import os
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))
+DIR = os.path.join(PROJECT_ROOT, "data", "processed")
+
 if __name__ == '__main__':
-    df = pd.read_csv(os.path.abspath("../data/processed/movie_dataset_processed.csv"))
+    df = pd.read_csv(os.path.join(DIR, "movie_dataset_processed.csv"))
 
     # Convert dataframe to list of dicts for consistency
     movies = df.to_dict(orient='records')
@@ -34,7 +38,7 @@ if __name__ == '__main__':
     }
 
     # Ensure processed folder exists
-    save_path = os.path.abspath("../data/processed/mappings.pkl")
+    save_path = os.path.abspath(os.path.join(DIR, "mappings.pkl"))
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
 
     # Save mappings as pickle

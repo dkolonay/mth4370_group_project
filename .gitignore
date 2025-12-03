@@ -31,3 +31,4 @@ build/
 *.jpg
 *.png
 *.pkl
+*.pt
