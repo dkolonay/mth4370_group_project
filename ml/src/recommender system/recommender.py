@@ -3,9 +3,7 @@ import pickle
 import torch
 import torch.nn.functional as F
 import faiss
-import numpy as np
 from typing import List, Optional, Union
-
 
 class MovieRecommender:
     """
