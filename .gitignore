@@ -30,5 +30,5 @@ build/
 *.txt.pt
 *.jpg
 *.png
-*.pkl
+mappings.pkl
 *.pt
