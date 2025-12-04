@@ -70,8 +70,6 @@ def train():
 
     # 2. Initialize Model
     model = MovieFusionModel(output_dim=512).to(DEVICE)
-    print("Compiling model...")
-    model = torch.compile(model)
 
     optimizer = optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-5)
 
@@ -89,7 +87,7 @@ def train():
         milestones=[warmup_steps]
     )
 
-    scaler = torch.cuda.amp.GradScaler()
+    scaler = torch.amp.GradScaler('cuda')
 
     # 3. Resume Logic
     start_epoch = 0
@@ -126,7 +124,7 @@ def train():
             mask_v2[:, 0:2] = 0 # zero out indicies 0-1 (in mask)
             view2 = {**batch, 'mask': mask_v2}
 
-            with torch.cuda.amp.autocast():
+            with torch.amp.autocast('cuda'):
                 z1 = model(view1)
                 z2 = model(view2)
                 loss = contrastive_loss(z1, z2, temperature=TEMPERATURE)
@@ -161,7 +159,7 @@ def train():
         if (epoch + 1) % 10 == 0:
             torch.save(checkpoint, os.path.join(SAVE_DIR, f"model_epoch_{epoch + 1}.pt"))
 
-    torch.save(model.state_dict(), "model/fusion_model.pt")
+    torch.save(model.state_dict(), os.path.join(SAVE_DIR, f"../../data/model/fusion_model.pt"))
     print("Training Complete.")
 
 

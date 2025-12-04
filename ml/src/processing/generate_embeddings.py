@@ -29,7 +29,7 @@ def generate_embeddings_learned(model_path="model/fusion_model.pt", batch_size=2
         print('provide model')
         return None
 
-    checkpoint = torch.load(model_path, map_location=device)
+    checkpoint = torch.load(os.path.join(DIR, '..' ,model_path), map_location=device)
     model.load_state_dict(checkpoint['model_state_dict'])
 
     model.eval()
@@ -63,3 +63,7 @@ def generate_embeddings_learned(model_path="model/fusion_model.pt", batch_size=2
     torch.save(embeddings_dict, save_path)
 
     return embeddings_dict
+
+
+if __name__ == '__main__':
+    generate_embeddings_learned()
