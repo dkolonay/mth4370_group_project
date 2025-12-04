@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom"
 
 const BASE_URL = "https://image.tmdb.org/t/p/original/"
 
-const MovieCard = ({movie_data, cardType}) =>{
+const MovieCard = ({movie_data, cardType, addToSelection, removeFromSelection}) =>{
     const [imgSrc, setImgSrc] = useState(`${BASE_URL}${movie_data.poster_path}`)
     const [selected, setSelected] = useState(false)
     const navigate = useNavigate()
@@ -22,6 +22,11 @@ const MovieCard = ({movie_data, cardType}) =>{
 
     const handleClick = ()=>{
         if (cardType === "selectable"){
+            if (selected){
+                removeFromSelection(movie_data.id)
+            } else {
+                addToSelection(movie_data.id)
+            }
             setSelected((prevSelect)=> !prevSelect)
         } else {
             navigate(`/movie-details/${movie_data.id}`)

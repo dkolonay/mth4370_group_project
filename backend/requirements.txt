@@ -10,3 +10,9 @@ PyJWT==2.10.1
 python-dotenv==1.2.1
 pytz==2025.2
 
+--extra-index-url https://download.pytorch.org/whl/cu130
+torch>=2.5.0
+torchvision>=0.20.0
+faiss-cpu
+sentence-transformers==5.1.2
+

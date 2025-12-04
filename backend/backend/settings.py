@@ -18,6 +18,8 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+API_PATH = BASE_DIR / 'api'
+ML_PATH = BASE_DIR / 'api' / 'ml'
 
 
 # Quick-start development settings - unsuitable for production

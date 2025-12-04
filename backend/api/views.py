@@ -9,6 +9,11 @@ from rest_framework import status
 from .models import Note
 from .models import Movie
 
+from .ml.recommender import MovieRecommender
+from .ml.sbert_encoder import MPNetEncoder
+
+movie_recommender = MovieRecommender(MPNetEncoder())
+
 
 class NoteListCreate(generics.ListCreateAPIView):
     serializer_class = NoteSerializer
@@ -83,18 +88,44 @@ class RecommendationsByDescription(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
    
     def get_queryset(self):
-        #when model is connected, we will run the description through the model to
-        #produce a list of movie ids that best fit the description
-
-        descriptionQuery = self.request.query_params.get("description")
-        # list_that_model_returns = run_description_model(descriptionQuery)
-        # queryset = Movie.objects.filter(id__in=list_that_model_returns)
-
-        print(descriptionQuery)
-
-        queryset = Movie.objects.order_by("-popularity")[:6] #dummy response
+        description_query = self.request.query_params.get("description")
+        recommended_ids = movie_recommender.search_by_text(description_query)
+        queryset = Movie.objects.filter(id__in = recommended_ids)
 
         return queryset
+    
+class RecommendationsByMovieIds(generics.ListCreateAPIView):
+    serializer_class = MovieSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+
+        movie_ids_query = self.request.query_params.get("movie_ids")
+        query_ids = [int(id_string) for id_string in movie_ids_query.split(",")]
+
+        recommended_ids = movie_recommender.search_by_movie_ids(query_ids)
+        queryset = Movie.objects.filter(id__in = recommended_ids)
+
+        return queryset
+    
+class RecommendationsHybrid(generics.ListCreateAPIView):
+    serializer_class = MovieSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+
+        movie_ids_query_string = self.request.query_params.get("movie_ids")
+        query_ids = [int(id_string) for id_string in movie_ids_query_string.split(",")]
+
+        description_query = self.request.query_params.get("description")
+
+        recommended_ids = movie_recommender.search_hybrid(query_ids, description_query)
+
+        queryset = Movie.objects.filter(id__in = recommended_ids)
+
+        return queryset
+
+
     
 
 
