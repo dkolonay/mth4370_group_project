@@ -83,7 +83,7 @@ def get_text_features(movie_item, sbert_encoder) -> Optional[torch.Tensor]:
         return None
 
     with torch.no_grad():
-        embedding = sbert_encoder.encode(text)  # if its empty sbert will just give it a default encoding
+        embedding = sbert_encoder(text)  # if its empty sbert will just give it a default encoding
     return embedding.cpu()
 
 def precompute_keywords(movie_item, words : WordEmbedding) -> Optional[torch.Tensor]:

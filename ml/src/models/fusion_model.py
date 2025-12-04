@@ -91,7 +91,8 @@ class MovieFusionModel(nn.Module):
         attn_scores = self.attention(stack)  # [batch, 6, 1]
 
         # Mask out missing modalities (set to -inf so softmax makes them 0)
-        attn_scores = attn_scores.masked_fill(modality_mask == 0, -1e9)
+        min_value = torch.finfo(attn_scores.dtype).min
+        attn_scores = attn_scores.masked_fill_(modality_mask == 0, min_value)
 
         # Normalize to get weights
         attn_weights = F.softmax(attn_scores, dim=1)

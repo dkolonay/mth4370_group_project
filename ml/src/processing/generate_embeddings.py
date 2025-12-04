@@ -1,11 +1,9 @@
 import os
-import pickle
 import torch
 import torch.nn.functional as F
 from tqdm import tqdm
-import sys
 
-from models.fusion_model import MovieFusionModel
+from ml.src.models.fusion_model import MovieFusionModel
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, "../.."))
@@ -18,7 +16,6 @@ def generate_embeddings_learned(model_path="model/fusion_model.pt", batch_size=2
     Args:
         model_path: Path to trained model checkpoint
         batch_size: Number of movies to process at once
-        device: torch device
     """
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -28,12 +25,12 @@ def generate_embeddings_learned(model_path="model/fusion_model.pt", batch_size=2
     model = MovieFusionModel(output_dim=512).to(device)
 
     # Load trained weights if available
-	if not model_path and (not os.path.exists(model_path)):
-		print('provide model')
-		return None
+    if not model_path and (not os.path.exists(model_path)):
+        print('provide model')
+        return None
 
-	checkpoint = torch.load(model_path, map_location=device)
-	model.load_state_dict(checkpoint['model_state_dict'])
+    checkpoint = torch.load(model_path, map_location=device)
+    model.load_state_dict(checkpoint['model_state_dict'])
 
     model.eval()
 

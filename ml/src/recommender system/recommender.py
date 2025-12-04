@@ -18,13 +18,16 @@ class MovieRecommender:
     - Hybrid (movies + text)
     """
 
-    def __init__(self,sbert_encoder=None, embeddings_path="data/processed/embeddings.pt", mappings_path="data/processed/mappings.pkl"):
+    def __init__(self,sbert_encoder, embeddings_path="data/processed/embeddings.pt", mappings_path="data/processed/mappings.pkl"):
         """
         Args:
         	sbert_encoder: MPNetEncoder instance for text queries
             embeddings_path: Path to embeddings .pt file (from generate_embeddings.py)
             mappings_path: Path to mappings.pkl
         """
+        if not os.path.exists(embeddings_path):
+            raise ValueError("embeddings are required.")
+
         #load embeddings
         embeddings_dict = torch.load(embeddings_path)
 
@@ -37,7 +40,6 @@ class MovieRecommender:
         with open(mappings_path, 'rb') as f:
             self.mappings = pickle.load(f)
 
-        self.movie_db = self.mappings['movie_database']
         self.tmdb_to_idx = self.mappings['tmdb_to_idx']
         self.idx_to_tmdb = {v: k for k, v in self.tmdb_to_idx.items()}
 
@@ -73,8 +75,8 @@ class MovieRecommender:
             List of dicts with movie info and similarity scores
 
         Example:
-            >>> recommender.search_by_movie_ids(603, k=5)
-            >>> recommender.search_by_movie_ids([27205, 157336], k=10)
+            >> recommender.search_by_movie_ids(603, k=5)
+            >> recommender.search_by_movie_ids([27205, 157336], k=10)
         """
         if isinstance(movie_ids, int): # singel movie_id
             movie_ids = [movie_ids]
@@ -103,20 +105,7 @@ class MovieRecommender:
                 continue
 
             tmdb_id = self.idx_to_tmdb[idx]
-            movie = self.movie_db[tmdb_id]
-
-            results.append({
-                'tmdb_id': tmdb_id,
-                'title': movie.get('title'),
-                'overview': movie.get('overview'),
-                'genres': movie.get('genres'),
-                'release_date': movie.get('release_date'),
-                'release_year': movie.get('release_year'),
-                'vote_average': movie.get('vote_average'),
-                'popularity': movie.get('popularity'),
-                'poster_path': movie.get('poster_path'),
-                'similarity_score': float(score)
-            })
+            results.append(tmdb_id)
 
             if len(results) >= k:
                 break
@@ -135,11 +124,8 @@ class MovieRecommender:
             List of dicts with movie info and similarity scores
 
         Example:
-            >>> recommender.search_by_text("cyberpunk action with philosophy")
+            >> recommender.search_by_text("cyberpunk action with philosophy")
         """
-        if self.sbert is None:
-            raise ValueError("Text encoder (sbert) not provided. Cannot perform text search.")
-
         # Encode text query
         with torch.no_grad():
             query_emb = self.sbert.encode(query).unsqueeze(0)
@@ -155,20 +141,7 @@ class MovieRecommender:
         results = []
         for score, idx in zip(scores[0], result_indices[0]):
             tmdb_id = self.idx_to_tmdb[idx]
-            movie = self.movie_db[tmdb_id]
-
-            results.append({
-                'tmdb_id': tmdb_id,
-                'title': movie.get('title'),
-                'overview': movie.get('overview'),
-                'genres': movie.get('genres'),
-                'release_date': movie.get('release_date'),
-                'release_year': movie.get('release_year'),
-                'vote_average': movie.get('vote_average'),
-                'popularity': movie.get('popularity'),
-                'poster_path': movie.get('poster_path'),
-                'similarity_score': float(score)
-            })
+            results.append(tmdb_id)
 
         return results
 
@@ -189,7 +162,7 @@ class MovieRecommender:
             List of dicts with movie info and similarity scores
 
         Example:
-            >>> recommender.search_hybrid(
+            >> recommender.search_hybrid(
             ...     movie_ids=550,
             ...     text_query="but with a clif hanger",
             ...     movie_weight=0.7
@@ -214,9 +187,6 @@ class MovieRecommender:
 
         # Add text embedding
         if text_query is not None:
-            if self.sbert is None:
-                raise ValueError("Text encoder (sbert) not provided. Cannot use text query.")
-
             with torch.no_grad():
                 text_emb = self.sbert.encode(text_query).unsqueeze(0)
 
@@ -232,7 +202,8 @@ class MovieRecommender:
             weights.append(1 - movie_weight)
 
         # Weighted combination
-        query_embedding = sum(w * emb for w, emb in zip(weights, embeddings_to_combine))
+        qstacked = torch.stack([w * emb for w, emb in zip(weights, embeddings_to_combine)])
+        query_embedding = torch.sum(qstacked, dim=0)
         query_embedding = F.normalize(query_embedding, p=2, dim=1)
 
         # Search
@@ -243,19 +214,6 @@ class MovieRecommender:
         results = []
         for score, idx in zip(scores[0], result_indices[0]):
             tmdb_id = self.idx_to_tmdb[idx]
-            movie = self.movie_db[tmdb_id]
-
-            results.append({
-                'tmdb_id': tmdb_id,
-                'title': movie.get('title'),
-                'overview': movie.get('overview'),
-                'genres': movie.get('genres'),
-                'release_date': movie.get('release_date'),
-                'release_year': movie.get('release_year'),
-                'vote_average': movie.get('vote_average'),
-                'popularity': movie.get('popularity'),
-                'poster_path': movie.get('poster_path'),
-                'similarity_score': float(score)
-            })
+            results.append(tmdb_id)
 
         return results
