@@ -16,7 +16,7 @@ class MovieRecommender:
     - Hybrid (movies + text)
     """
 
-    def __init__(self, sbert_encoder, embeddings_path="data/processed/embeddings.pt", mappings_path="data/processed/mappings.pkl"):
+    def __init__(self, sbert_encoder, embeddings_path="data/processed/embeddings.pt", mappings_path="data/processed/mappings_no_dataset.pkl"):
         """
         Args:
         	sbert_encoder: MPNetEncoder instance for text queries
