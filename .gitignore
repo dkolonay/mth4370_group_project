@@ -11,6 +11,7 @@
 .venv
 .venv/
 venv/
+venv_free_threaded
 
 # Bytecode caches
 __pycache__/
@@ -30,5 +31,5 @@ build/
 *.txt.pt
 *.jpg
 *.png
-mappings.pkl
+*.pkl
 *.pt

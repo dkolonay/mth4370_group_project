@@ -9,7 +9,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, "../.."))
 DIR = os.path.join(PROJECT_ROOT, "data", "processed")
 
-def generate_embeddings_learned(model_path="model/fusion_model.pt", batch_size=256):
+def generate_embeddings_learned(model_path="model/fusion_model_plots.pt", batch_size=256):
     """
     Generate embeddings using trained fusion model
 
@@ -62,7 +62,7 @@ def generate_embeddings_learned(model_path="model/fusion_model.pt", batch_size=2
         'text_only': text_embeddings
     }
 
-    save_path = os.path.join(DIR, 'embeddings.pt')
+    save_path = os.path.join(DIR, 'embeddings_wp.pt')
     torch.save(embeddings_dict, save_path)
 
     return embeddings_dict
