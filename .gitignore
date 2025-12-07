@@ -13,6 +13,8 @@
 venv/
 venv_free_threaded
 
+.vite/
+
 # Bytecode caches
 __pycache__/
 *.py[cod]
