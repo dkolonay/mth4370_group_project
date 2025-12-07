@@ -25,13 +25,29 @@ build/
 
 # Logs
 *.log
-
-#data
-*.zip
-*.csv
 *.txt
-*.txt.pt
-*.jpg
+*.zip
 *.png
-*.pkl
-*.pt
+*.jpg
+*txt.pt
+fusion_model.pt
+fusion_model_plots.pt
+embeddings.pt
+features.pt
+features_experimental.pt
+features_w_plots.pt
+mappings.pkl
+mappings_with_plots.pkl
+movie_dataset_processed.csv
+TMDB_movie_dataset_v11.csv
+*checkpoint.pt
+model_epoch_10.pt
+model_epoch_20.pt
+model_epoch_30.pt
+model_epoch_40.pt
+model_epoch_50.pt
+model_epoch_60.pt
+model_epoch_70.pt
+model_epoch_80.pt
+model_epoch_90.pt
+model_epoch_100.pt
