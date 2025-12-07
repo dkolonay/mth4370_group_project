@@ -1,0 +1,17 @@
+.genres{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 1rem;
+  width: 95%;
+  margin: 2rem auto;
+  display: none;
+}
+
+.filter-select-list{
+  width: 100%;
+}
+
+.sort{
+  display: none;
+}
+

@@ -1,0 +1,30 @@
+
+.search-control{
+    --search-height: 40px;
+    color: white;
+    height: var(--search-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+}
+.search-bar{
+    padding: 20px 20px;
+    height: 30px;
+    font-size: 1.3rem;
+
+}
+
+.search-icon{
+    height: calc(var(--search-height) * 0.65);
+    aspect-ratio: 1;
+    position: absolute;
+    right: 60px;
+}
+
+.search-bar:focus{
+    outline: none;
+}
