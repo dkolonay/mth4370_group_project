@@ -1,0 +1,24 @@
+.film-strip{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 22px;
+    position: absolute;
+    left: 0px;
+    z-index: 4;
+    padding: 0px 20px;
+    gap: 12px;
+}
+
+.film-strip-hole{
+    background: var(--base-color);
+    box-shadow: inset 0px 0px 3px 0px black;
+    height: 12px;
+    border-radius: 1px;
+    width: 16px;
+}
+
+.bottom-strip{
+    bottom: 0px;
+}

@@ -1,14 +1,10 @@
 import {useState, useRef, useCallback, useEffect} from "react";
+import "./Search.css"
+import searchIcon from "../../assets/img/search.png"
 
 const Search = ({setSearchQuery})=>{
     const [query, setQuery] = useState("")
     const timeoutRef = useRef(null);
-
-    const handleSubmit = (e)=>{
-        e.preventDefault()
-
-        setSearchQuery(query)
-    }
 
     const updateQuery = useCallback((e)=>{
         setQuery(e.target.value)
@@ -29,11 +25,10 @@ const Search = ({setSearchQuery})=>{
     }, [])
 
     return(
-        <form onSubmit={handleSubmit}>
-            <label htmlFor="search">Search</label>
-            <input type="text" default={"Search for movies"} value={query} onChange={updateQuery}/>
-            <button>Submit</button>
-        </form>
+        <div className={"search-control"}>
+            <input className={'search-bar'} type="text" default={"Search for movies"} value={query} onChange={updateQuery} placeholder={"Search Movies"}/>
+            <img className={'search-icon'} src={searchIcon} alt="search" />
+        </div>
     )
 }
 

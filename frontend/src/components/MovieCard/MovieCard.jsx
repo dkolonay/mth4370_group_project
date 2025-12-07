@@ -40,7 +40,11 @@ const MovieCard = ({movie_data, cardType, addToSelection, removeFromSelection}) 
 
             <img className={"movie-card-image"} src={imgSrc} alt={`${movie_data.title}`} onError={handleError} />
             </div>
+            <div className={"movie-card-details"}>
             <h3 className={"movie-card-title"}>{movie_data.title}</h3>
+            <p>{movie_data.vote_average.toFixed(1)} &#9733;</p>
+
+            </div>
         </div>
     )
 }

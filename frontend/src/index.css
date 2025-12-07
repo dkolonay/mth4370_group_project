@@ -2,8 +2,14 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    --base-color: rgb(212, 209, 176);
+    --pop-color: rgb(190, 183, 102);
+
 }
 
 html, body, #root{
     width: 100%;
+    overflow-x: hidden;
+    font-family: Arial, sans-serif;
+    background-color: var(--base-color);
 }

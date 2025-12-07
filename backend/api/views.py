@@ -89,7 +89,7 @@ class RecommendationsByDescription(generics.ListCreateAPIView):
    
     def get_queryset(self):
         description_query = self.request.query_params.get("description")
-        recommended_ids = movie_recommender.search_by_text(description_query)
+        recommended_ids = movie_recommender.search_by_text(description_query, 100)
         queryset = Movie.objects.filter(id__in = recommended_ids)
 
         return queryset
@@ -124,10 +124,6 @@ class RecommendationsHybrid(generics.ListCreateAPIView):
         queryset = Movie.objects.filter(id__in = recommended_ids)
 
         return queryset
-
-
-    
-
 
 
 class CreateUserView(generics.CreateAPIView):

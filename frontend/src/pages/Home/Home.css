@@ -1,6 +1,8 @@
-/* Container for the whole page */
-div {
-  font-family: Arial, sans-serif;
+
+.homepage {
+  margin: auto;
+  margin-top: 1.2rem;
+  max-width: 1200px;
 }
 
 

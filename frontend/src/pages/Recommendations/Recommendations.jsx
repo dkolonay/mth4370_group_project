@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../../api";
 import "./Recommendations.css";
 import PageContainer from "../../components/PageContainer/PageContainer";
+import ContentContainer from "../../components/ContentContainer/ContentContainer";
 import MovieList from "../../components/MovieList/MovieList";
 
 const Recommendations = () => {
@@ -74,6 +75,9 @@ console.log(selectedMovieIds)
 
   return (
     <PageContainer>
+      <ContentContainer>
+
+ 
       <div className={"recommendations-container"}>
         <h1>Get Movie Recommendations</h1>
         <br />
@@ -113,6 +117,7 @@ console.log(selectedMovieIds)
         <br />
         <MovieList movies={movieChoices} cardType={"selectable"} addToSelection={addSelectedMovie} removeFromSelection={removeSelectedMovie}/>
       </div>
+           </ContentContainer>
     </PageContainer>
   );
 };

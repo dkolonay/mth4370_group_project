@@ -21,7 +21,7 @@ class MovieRecommender:
     - Hybrid (movies + text)
     """
 
-    def __init__(self,sbert_encoder=None, embeddings_path=ml_path / "data" / "embeddings.pt" , mappings_path= ml_path / "data" / "mappings_no_dataset.pkl"):
+    def __init__(self,sbert_encoder=None, embeddings_path=ml_path / "data" / "embeddings_wp.pt" , mappings_path= ml_path / "data" / "mappings_no_dataset.pkl"):
         """
         Args:
         	sbert_encoder: MPNetEncoder instance for text queries
@@ -196,7 +196,7 @@ class MovieRecommender:
                 raise ValueError("Text encoder (sbert) not provided. Cannot use text query.")
 
             with torch.no_grad():
-                text_emb = self.sbert.encode(text_query).unsqueeze(0)
+                text_emb = self.sbert.forward(text_query).unsqueeze(0)
 
             # Project to same embedding space
             if text_emb.shape[1] != self.embed_dim:
@@ -221,7 +221,6 @@ class MovieRecommender:
         results = []
         for score, idx in zip(scores[0], result_indices[0]):
             tmdb_id = self.idx_to_tmdb[idx]
-            movie = self.movie_db[tmdb_id]
 
             results.append(tmdb_id)
 

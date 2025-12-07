@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import "./Controls.css";
 import FilterSelectItem from "../FilterSelectItem/FilterSelectItem";
 import Search from "../Search/Search";
+import ContentContainer from "../ContentContainer/ContentContainer";
 
 const Controls = ({ getMovies }) => {
   const [sortType, setSortType] = useState("-popularity");
@@ -52,13 +53,15 @@ const Controls = ({ getMovies }) => {
     })
   }
 
-  return (<>
+  return (
+    <ContentContainer>
     <Search setSearchQuery={setSearchQuery}/>
     <form className={"controls"}>
       
       <label htmlFor="sort">Sort by:</label>
       <select
         name="sort"
+        className={'sort'}
         id="sort"
         value={sortType}
         onChange={(e) => {
@@ -84,7 +87,8 @@ const Controls = ({ getMovies }) => {
         })}
       </ul>
     </form>
-    </>
+    </ContentContainer>
+   
   );
 };
 
