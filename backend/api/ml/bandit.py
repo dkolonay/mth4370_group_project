@@ -48,7 +48,12 @@ class ThomasSamplingBandit(Bandit):
         if len(candidate_ids) < k:
             raise "length of candidate_ids should be greater than or equal to k"
 
-        subset = self.df.loc[candidate_ids]
+        valid_candidates = [cid for cid in candidate_ids if cid in self.df.index]
+
+        if not valid_candidates:
+            return []
+
+        subset = self.df.loc[valid_candidates]
 
         batch_alpha = torch.tensor(subset['alpha'].values, dtype=torch.float32)
         batch_beta = torch.tensor(subset['beta'].values, dtype=torch.float32)
