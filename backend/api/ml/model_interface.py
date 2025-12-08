@@ -23,7 +23,7 @@ def get_rec_sys_instance():
     if _REC_SYS_INSTANCE is None:
 
         import pandas as pd
-        df = pd.read_pickle("filename.pkl")
+        df = pd.read_pickle("general_distribution.pkl")
 
         bandit = ThomasSamplingBandit(df)
         encoder = MPNetEncoder()
