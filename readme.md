@@ -19,13 +19,8 @@ To run backend/db for development
     * open terminal to "backend" directory  
 
     $ docker-compose up -d --build
-    $ docker-compose exec web python manage.py migrate
-    $ docker-compose down
-    $ docker-compose up -d --build
 
-    * It's a little sloppy right now. The final container setup isn't in place yet
-
-To run frontend for development  
+To run frontend for development  (Must have Node.js installed)
     * open terminal to "frontend" directory
 
     $ npm install

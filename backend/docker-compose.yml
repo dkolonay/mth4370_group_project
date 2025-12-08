@@ -3,12 +3,14 @@ services:
   web:
     build: .
     command: python /code/manage.py runserver 0.0.0.0:8000
+    entrypoint: ["/code/entrypoint.sh"]
     volumes:
       - .:/code
     ports:
       - 8000:8000
     depends_on:
-      - db
+      db:
+        condition: service_healthy
   db:
     image: postgres:14
     volumes:
@@ -19,6 +21,11 @@ services:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:

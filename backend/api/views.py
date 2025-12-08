@@ -10,7 +10,8 @@ from .models import Note
 from .models import Movie
 from .models import UserDelta
 
-from .ml.model_interface import get_recommendations, QueryType
+from .ml.model_interface import get_rec_sys_instance, get_recommendations, QueryType
+get_rec_sys_instance() #initialize rec_sys on startup
 
 class UserDeltaListCreate(generics.ListCreateAPIView):
     serializer_class = UserDeltaSerializer
@@ -87,7 +88,6 @@ class RecommendationsByMovieIds(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
 
     def get_queryset(self):
-        print(self.request.query_params.get("movie_ids"))
         movie_ids_query = self.request.query_params.get("movie_ids")
         query_ids = [int(id_string) for id_string in movie_ids_query.split(",")]
 
