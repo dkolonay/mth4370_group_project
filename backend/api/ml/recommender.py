@@ -3,7 +3,6 @@ import pickle
 import torch
 import torch.nn.functional as F
 import faiss
-import numpy as np
 from typing import List, Optional, Union
 
 from django.conf import settings
@@ -21,7 +20,12 @@ class MovieRecommender:
     - Hybrid (movies + text)
     """
 
-    def __init__(self,sbert_encoder=None, embeddings_path=ml_path / "data" / "embeddings_wp.pt" , mappings_path= ml_path / "data" / "mappings_no_dataset.pkl"):
+    def __init__(
+            self,
+            sbert_encoder=None,
+            embeddings_path=os.path.join(ml_path, "data", "embeddings_wp.pt"),
+            mappings_path=os.path.join(ml_path, "data", "mappings_no_dataset.pkl")
+    ):
         """
         Args:
         	sbert_encoder: MPNetEncoder instance for text queries
