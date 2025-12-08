@@ -44,3 +44,5 @@ class Movie(models.Model):
 
     def __str__(self):
         return self.title
+    
+    # user_deltas: Dict { movie_id: {'alpha': 2.0, 'beta': 0.0} }
