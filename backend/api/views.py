@@ -9,8 +9,8 @@ from rest_framework import status
 from .models import Note
 from .models import Movie
 
-from .ml.recommender import MovieRecommender
-from .ml.sbert_encoder import MPNetEncoder
+from backend.api.ml.recommender import MovieRecommender
+from backend.api.ml.sbert_encoder import MPNetEncoder
 
 movie_recommender = MovieRecommender(MPNetEncoder())
 
