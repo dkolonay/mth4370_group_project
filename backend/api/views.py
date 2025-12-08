@@ -1,42 +1,31 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework import generics
-from .serializers import UserSerializer, NoteSerializer, MovieSerializer
+from .serializers import UserSerializer, NoteSerializer, MovieSerializer, UserDeltaSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 
 from .models import Note
 from .models import Movie
+from .models import UserDelta
 
-from backend.api.ml.recommender import MovieRecommender
-from backend.api.ml.sbert_encoder import MPNetEncoder
+from .ml.model_interface import get_rec_sys_instance, get_recommendations, QueryType
+get_rec_sys_instance() #initialize rec_sys on startup
 
-movie_recommender = MovieRecommender(MPNetEncoder())
-
-
-class NoteListCreate(generics.ListCreateAPIView):
-    serializer_class = NoteSerializer
+class UserDeltaListCreate(generics.ListCreateAPIView):
+    serializer_class = UserDeltaSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        user = self.request.user
-        return Note.objects.filter(author=user)
-    
     def perform_create(self, serializer):
         if serializer.is_valid():
-            serializer.save(author=self.request.user)
+            serializer.save(user = self.request.user)
         else:
             print(serializer.errors)
 
-class NoteDelete(generics.DestroyAPIView):
-    serializer_class = NoteSerializer
-    permission_classes = [IsAuthenticated]
-
     def get_queryset(self):
         user = self.request.user
-        return Note.objects.filter(author=user)
-    
+        return UserDelta.objects.filter(user=user)
 
 class DisplayMovie(generics.ListCreateAPIView):
     serializer_class = MovieSerializer
@@ -89,7 +78,7 @@ class RecommendationsByDescription(generics.ListCreateAPIView):
    
     def get_queryset(self):
         description_query = self.request.query_params.get("description")
-        recommended_ids = movie_recommender.search_by_text(description_query, 100)
+        recommended_ids = get_recommendations(qtype = QueryType.TEXT, query= description_query, k= 100)
         queryset = Movie.objects.filter(id__in = recommended_ids)
 
         return queryset
@@ -99,11 +88,10 @@ class RecommendationsByMovieIds(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
 
     def get_queryset(self):
-
         movie_ids_query = self.request.query_params.get("movie_ids")
         query_ids = [int(id_string) for id_string in movie_ids_query.split(",")]
 
-        recommended_ids = movie_recommender.search_by_movie_ids(query_ids)
+        recommended_ids = get_recommendations(qtype = QueryType.MOVIE, movie_ids = query_ids, k= 100)
         queryset = Movie.objects.filter(id__in = recommended_ids)
 
         return queryset
@@ -119,7 +107,7 @@ class RecommendationsHybrid(generics.ListCreateAPIView):
 
         description_query = self.request.query_params.get("description")
 
-        recommended_ids = movie_recommender.search_hybrid(query_ids, description_query)
+        recommended_ids = get_recommendations(qtype = QueryType.HYBRID, query=description_query, movie_ids=query_ids, k=100)
 
         queryset = Movie.objects.filter(id__in = recommended_ids)
 
@@ -130,3 +118,28 @@ class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all() #disallow create of usernames that already exist
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
+
+
+
+
+# class NoteListCreate(generics.ListCreateAPIView):
+#     serializer_class = NoteSerializer
+#     permission_classes = [IsAuthenticated]
+
+#     def get_queryset(self):
+#         user = self.request.user
+#         return Note.objects.filter(author=user)
+    
+#     def perform_create(self, serializer):
+#         if serializer.is_valid():
+#             serializer.save(author=self.request.user)
+#         else:
+#             print(serializer.errors)
+
+# class NoteDelete(generics.DestroyAPIView):
+#     serializer_class = NoteSerializer
+#     permission_classes = [IsAuthenticated]
+
+#     def get_queryset(self):
+#         user = self.request.user
+#         return Note.objects.filter(author=user)

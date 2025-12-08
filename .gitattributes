@@ -2,3 +2,5 @@ movie_dataset_cleaned.csv filter=lfs diff=lfs merge=lfs -text
 embeddings_wp.pt filter=lfs diff=lfs merge=lfs -text
 mappings_no_dataset.pkl filter=lfs diff=lfs merge=lfs -text
 general_distribution.pkl filter=lfs diff=lfs merge=lfs -text
+
+entrypoints.sh text eol=lf

@@ -95,4 +95,17 @@ box-shadow: 0px 0px 6px rgb(22, 26, 22), inset 0px 0px 7px 5px rgb(193, 199, 111
    
 }
 
+.genre-list{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 15px;
+}
+
+.genre-item{
+    background-color: black;
+    padding: 5px 15px;
+    border-radius: 10px;
+}
+
 

@@ -28,7 +28,7 @@ class RecommendationSystem:
          if user_deltas is None:
              user_deltas = {}
 
-         candidate_ids = self.recommender.search_by_text(query, 1000)
+         candidate_ids = self.recommender.search_by_text(query, k+10)
          return self.personalized(candidate_ids, user_deltas, k)
     
     def search_by_movie_id(
@@ -40,7 +40,7 @@ class RecommendationSystem:
         if user_deltas is None:
             user_deltas = {}
 
-        candidate_ids = self.recommender.search_by_movie_ids(movie_ids, 1000)
+        candidate_ids = self.recommender.search_by_movie_ids(movie_ids, k+10)
         return self.personalized(candidate_ids, user_deltas, k)
     
     def search_by_hybrid(
@@ -53,7 +53,7 @@ class RecommendationSystem:
         if user_deltas is None:
             user_deltas = {}
 
-        candidate_ids = self.recommender.search_hybrid(movie_ids, query, 0.5, 1000)
+        candidate_ids = self.recommender.search_hybrid(movie_ids, query, 0.5, k+10)
         return self.personalized(candidate_ids, user_deltas, k)
          
         
