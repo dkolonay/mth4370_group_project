@@ -63,7 +63,14 @@ const MovieDetailsPage = () => {
                 <h1>{movieData.title}</h1>
                 <p>{new Date(movieData.release_date).getFullYear()}</p>
                 <p>{movieData.overview}</p>
-                <p>{movieData.genres}</p>
+                <div className={"genre-list"}>
+
+                {movieData.genres.split(",", 6).map((genre)=>{
+                  return (
+                  <p className={"genre-item"}>{genre}</p>
+                )
+                })}
+                </div>
 
                 <div className={`review-circle ${movieData.vote_average > 7 ? 'green-circle' : 'red-circle'}`}>
                   <p>{movieData.vote_average.toFixed(1)}</p>

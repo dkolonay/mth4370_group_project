@@ -1,14 +1,15 @@
-import atexit
-import threading
-import time
+import os
 from typing import Dict, List, Union
 from enum import Enum
 from django.conf import settings
+import pandas as pd
 
 from .bandit import ThomasSamplingBandit
 from .recommender import MovieRecommender
 from .sbert_encoder import MPNetEncoder
-from recommendation_system import RecommendationSystem
+from .recommendation_system import RecommendationSystem
+
+ml_path = settings.ML_PATH
 
 _REC_SYS_INSTANCE = None
 
@@ -22,8 +23,8 @@ def get_rec_sys_instance():
 
     if _REC_SYS_INSTANCE is None:
 
-        import pandas as pd
-        df = pd.read_pickle("general_distribution.pkl")
+        
+        df = pd.read_pickle(os.path.join(ml_path, "data", "general_distribution.pkl"))
 
         bandit = ThomasSamplingBandit(df)
         encoder = MPNetEncoder()
@@ -34,9 +35,9 @@ def get_rec_sys_instance():
 
 def get_recommendations(
         qtype: QueryType,
-        query: str,
-        movie_ids: Union[int, List[int]],
-        user_deltas: Dict[int, Dict[str, float]],
+        query: str = None,
+        movie_ids: Union[int, List[int]] = None,
+        user_deltas: Dict[int, Dict[str, float]] = None,
         k: int = 10
 ) -> List[int]:
     rec_sys = get_rec_sys_instance()

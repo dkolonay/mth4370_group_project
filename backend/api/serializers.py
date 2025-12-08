@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 from .models import Note
 from .models import Movie
+from .models import UserDelta
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -20,6 +21,12 @@ class NoteSerializer(serializers.ModelSerializer):
         model = Note
         fields = ["id", "title", "content", "created_at", "author"]
         extra_kwargs = {"author": {"read_only": True}} #author name can be read but not changed
+
+class UserDeltaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserDelta
+        fields = ["user", "movie_id", "alpha", "beta"]
+        extra_kwargs = {"user" : {"read_only": True}}
 
 
 class MovieSerializer(serializers.ModelSerializer):

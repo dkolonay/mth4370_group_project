@@ -10,7 +10,6 @@ class Note(models.Model):
     def __str__(self):
         return self.title
     
-
 class Movie(models.Model):
 
     class Meta:
@@ -44,5 +43,16 @@ class Movie(models.Model):
 
     def __str__(self):
         return self.title
+    
+class UserDelta(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_deltas")
+    movie_id = models.IntegerField()
+    alpha = models.FloatField()
+    beta = models.FloatField()
+
+class MovieProb(models.Model):
+    movie_id = models.IntegerField()
+    alpha = models.FloatField()
+    beta = models.FloatField()
     
     # user_deltas: Dict { movie_id: {'alpha': 2.0, 'beta': 0.0} }

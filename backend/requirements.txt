@@ -15,4 +15,5 @@ torch>=2.5.0
 torchvision>=0.20.0
 faiss-cpu
 sentence-transformers==5.1.2
+pandas
 
