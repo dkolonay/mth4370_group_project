@@ -29,9 +29,8 @@ class ThomasSamplingBandit(Bandit):
         """
         self.personal_lr = personal_lr
 
-        self.df = global_df.set_index('id')
-        self.df['alpha'] = self.df['alpha'].astype(float)
-        self.df['beta'] = self.df['beta'].astype(float)
+        self.df = global_df
+        self.stats = self.df.set_index('id')[['alpha', 'beta']].to_dict('index')
 
     def rank(
             self,
@@ -48,33 +47,25 @@ class ThomasSamplingBandit(Bandit):
         if len(candidate_ids) < k:
             raise "length of candidate_ids should be greater than or equal to k"
 
-        valid_candidates = [cid for cid in candidate_ids if cid in self.df.index]
+        ranked_candidates = []
 
-        if not valid_candidates:
-            return []
+        for movie_id in candidate_ids:
+            alpha = self.stats[movie_id]['alpha']
+            beta = self.stats[movie_id]['beta']
 
-        subset = self.df.loc[valid_candidates]
+            if movie_id in user_deltas:
+                alpha += user_deltas[movie_id].get('alpha', 0.0)
+                beta += user_deltas[movie_id].get('beta', 0.0)
 
-        batch_alpha = torch.tensor(subset['alpha'].values, dtype=torch.float32)
-        batch_beta = torch.tensor(subset['beta'].values, dtype=torch.float32)
+            ranked_candidates.append({
+                'id': movie_id,
+                'score': torch.distributions.Beta(float(alpha), float(beta)).sample()
+            })
 
-        # 3. Apply User Context (The "Filling" of the sandwich)
-        # We add the user's stored Deltas to the Global Alphas
-        if user_deltas:
-            id_to_idx = {movie_id: i for i, movie_id in enumerate(candidate_ids)}
-            for movie_id, stats in user_deltas.items():
-                if movie_id in id_to_idx:
-                    idx = id_to_idx[movie_id]
-                    batch_alpha[idx] += stats.get('alpha', 0.0)
-                    batch_beta[idx] += stats.get('beta', 0.0)
 
-        # 4. Thompson Sampling
-        sampled_scores = torch.distributions.Beta(batch_alpha, batch_beta).sample()
+        ranked_candidates.sort(key=lambda x: x['score'], reverse=True)
 
-        # 5. Top K Selection
-        _, indices = torch.topk(sampled_scores, k=k)
-
-        return [candidate_ids[i] for i in indices.numpy()]
+        return [item['id'] for item in ranked_candidates[:k]]
 
     def calculate_interaction(
             self,
@@ -91,18 +82,15 @@ class ThomasSamplingBandit(Bandit):
         p_alpha = alpha_inc * self.personal_lr
         p_beta = beta_inc * self.personal_lr
 
-        g_alpha = alpha_inc
-        g_beta = beta_inc
-
-        self.df.at[movie_id, 'alpha'] += g_alpha
-        self.df.at[movie_id, 'beta'] += g_beta
+        self.stats[movie_id]['alpha'] += alpha_inc
+        self.stats[movie_id]['beta'] += beta_inc
 
         # Return Transaction
         current_stats = user_deltas.get(movie_id, {'alpha': 0.0, 'beta': 0.0})
 
         return {
             'movie_id': movie_id,
-            'global_update': {'alpha_inc': g_alpha, 'beta_inc': g_beta}, # returns increments
+            'global_update': {'alpha_inc': alpha_inc, 'beta_inc': beta_inc}, # returns increments
             'user_update': {
                 'new_alpha_delta': current_stats['alpha'] + p_alpha, # returns total
                 'new_beta_delta': current_stats['beta'] + p_beta
