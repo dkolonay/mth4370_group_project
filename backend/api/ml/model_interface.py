@@ -13,25 +13,21 @@ ml_path = settings.ML_PATH
 
 _REC_SYS_INSTANCE = None
 
+if _REC_SYS_INSTANCE is None:
+    df = pd.read_pickle(os.path.join(ml_path, "data", "general_distribution.pkl"))
+
+    bandit = ThomasSamplingBandit(df)
+    encoder = MPNetEncoder()
+    recommender = MovieRecommender(encoder)
+
+    _REC_SYS_INSTANCE = RecommendationSystem(recommender, bandit)
+
 class QueryType(Enum):
     TEXT = 1
     MOVIE = 2
     HYBRID = 3
 
-def get_rec_sys_instance():
-    global _REC_SYS_INSTANCE
 
-    if _REC_SYS_INSTANCE is None:
-
-        
-        df = pd.read_pickle(os.path.join(ml_path, "data", "general_distribution.pkl"))
-
-        bandit = ThomasSamplingBandit(df)
-        encoder = MPNetEncoder()
-        recommender = MovieRecommender(encoder)
-        _REC_SYS_INSTANCE = RecommendationSystem(recommender, bandit)
-
-    return _REC_SYS_INSTANCE
 
 def get_recommendations(
         qtype: QueryType,
@@ -40,7 +36,7 @@ def get_recommendations(
         user_deltas: Dict[int, Dict[str, float]] = None,
         k: int = 10
 ) -> List[int]:
-    rec_sys = get_rec_sys_instance()
+    rec_sys = _REC_SYS_INSTANCE
 
     match qtype:
         case QueryType.TEXT:
