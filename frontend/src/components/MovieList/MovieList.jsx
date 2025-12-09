@@ -8,7 +8,10 @@ const MovieList = ({ movies, selectedMovies, cardType, addToSelection, removeFro
     <div className={"movie-list"}>
       <AnimatePresence>
       {movies.map((movie) => {
-        const selected = selectedMovies.some(item => item.id === movie.id)
+        let selected = false;
+        if (cardType === "selector"){
+          selected = selectedMovies.some(item => item.id === movie.id)
+        }
         return <MovieCard movie_data={movie} key={movie.id} cardType={cardType} addToSelection={addToSelection} removeFromSelection={removeFromSelection} selected={selected}/>;
       })}
       </AnimatePresence>

@@ -95,7 +95,7 @@ const Home = () => {
       <ContentContainer>
         <h1 className="home-title">Browse Movies</h1>
         <div className={"home-container"}>
-        <MovieList movies={movies} selectedMovies={selectedMovies} cardType={"link"} addToSelection={addToSelection} removeFromSelection={removeFromSelection}/>
+        <MovieList movies={movies} selectedMovies={selectedMovies} cardType={"selector"} addToSelection={addToSelection} removeFromSelection={removeFromSelection}/>
         <Controls getMovies={getMovies} selectedMovieData={selectedMovies} removeFromSelection={removeFromSelection} getRecommendations={getRecommendations}/>
         </div>
       </ContentContainer>

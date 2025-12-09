@@ -5,7 +5,6 @@ import ProtectedRoute from "./components/ProtectedRoute"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
 import Home from "./pages/Home/Home"
-import Recommendations from "./pages/Recommendations/Recommendations"
 import MovieDetailsPage from "./pages/MovieDetailsPage/MovieDetailsPage"
 import NotFound from "./pages/NotFound"
 
@@ -29,14 +28,6 @@ function App() {
         element={
           <ProtectedRoute>
             <Home/>
-          </ProtectedRoute>
-        }
-          />
-           <Route 
-        path="/recommendations" 
-        element={
-          <ProtectedRoute>
-            <Recommendations/>
           </ProtectedRoute>
         }
           />

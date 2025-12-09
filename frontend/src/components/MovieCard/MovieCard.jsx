@@ -28,9 +28,7 @@ const MovieCard = ({
   }, [movie_data.poster_link]);
 
   const handleCardClick = () => {
-    if (cardType === "link") {
       navigate(`/movie-details/${movie_data.id}`);
-    } 
   };
 
   const handleSelection = (e)=>{
@@ -63,7 +61,7 @@ const MovieCard = ({
       <div className={"movie-card-details"}>
         <h3 className={"movie-card-title"}>{movie_data.title}</h3>
         <p>{movie_data.vote_average.toFixed(1)} &#9733;</p>
-        <button onClick={handleSelection}>{selected ? 'Remove from search' : 'Add to search'}</button>
+        {cardType === "selector" && <button onClick={handleSelection}>{selected ? 'Remove from search' : 'Add to search'}</button>}
       </div>
     </motion.div>
   );

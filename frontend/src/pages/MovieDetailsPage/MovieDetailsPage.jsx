@@ -105,7 +105,7 @@ const MovieDetailsPage = () => {
             <ContentContainer>
             <div className={"recommendations-area"}>
               <h2>Check out similar films</h2>
-              <MovieList movies={movieRecommendations} cardType={"link"} />
+              <MovieList movies={movieRecommendations} cardType={"basic"} />
             </div>
             </ContentContainer>
           )}
