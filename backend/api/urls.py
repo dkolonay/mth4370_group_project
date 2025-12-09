@@ -9,4 +9,5 @@ urlpatterns = [
     path("recommendations/by-description/", views.RecommendationsByDescription.as_view(), name="by-description"),
     path("recommendations/by-id/", views.RecommendationsByMovieIds.as_view(), name="by-id"),
     path("recommendations/hybrid/", views.RecommendationsHybrid.as_view(), name="hybrid"),
+    path("user-actions/like/", views.LikeListCreate.as_view(), name="like"),
 ]

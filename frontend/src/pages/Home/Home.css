@@ -5,5 +5,16 @@
   max-width: 1200px;
 }
 
+.home-title{
+  margin-bottom: 1rem;
+}
+
+.home-container{
+  display: flex;
+  gap: 20px;
+  justify-content: flex-start;
+
+}
+
 
 

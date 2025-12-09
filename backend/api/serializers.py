@@ -4,6 +4,7 @@ from rest_framework import serializers
 from .models import Note
 from .models import Movie
 from .models import UserDelta
+from .models import Like
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,6 +28,13 @@ class UserDeltaSerializer(serializers.ModelSerializer):
         model = UserDelta
         fields = ["user", "movie_id", "alpha", "beta"]
         extra_kwargs = {"user" : {"read_only": True}}
+
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
+        fields = ["user", "movie_id"]
+        extra_kwargs = {"user": {"read_only": True}}
+
 
 
 class MovieSerializer(serializers.ModelSerializer):

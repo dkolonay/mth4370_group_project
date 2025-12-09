@@ -1,21 +1,20 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework import generics
-from .serializers import UserSerializer, NoteSerializer, MovieSerializer, UserDeltaSerializer
+from .serializers import UserSerializer, NoteSerializer, MovieSerializer, UserDeltaSerializer, LikeSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 
-from .models import Note
-from .models import Movie
-from .models import UserDelta
+from .models import Movie, UserDelta, Like
 
-from .ml.model_interface import get_rec_sys_instance, get_recommendations, QueryType
-get_rec_sys_instance() #initialize rec_sys on startup
+from .ml.model_interface import get_recommendations, QueryType
+#I want to initialize _REC_INSTANCE on startup
 
 class UserDeltaListCreate(generics.ListCreateAPIView):
     serializer_class = UserDeltaSerializer
     permission_classes = [IsAuthenticated]
+    
 
     def perform_create(self, serializer):
         if serializer.is_valid():
@@ -26,6 +25,20 @@ class UserDeltaListCreate(generics.ListCreateAPIView):
     def get_queryset(self):
         user = self.request.user
         return UserDelta.objects.filter(user=user)
+    
+class LikeListCreate(generics.ListCreateAPIView):
+    serializer_class = LikeSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        print(self.request)
+        serializer.save(user = self.request.user)
+     
+
+    def get_queryset(self):
+        user = self.request.user
+        return Like.objects.filter(user=user)
+    
 
 class DisplayMovie(generics.ListCreateAPIView):
     serializer_class = MovieSerializer
@@ -34,8 +47,10 @@ class DisplayMovie(generics.ListCreateAPIView):
     def get(self, request, pk):
         try:
             movie = Movie.objects.get(pk=pk)
+            is_liked = Like.objects.filter(user=request.user, movie_id=pk).exists()
             serializer = MovieSerializer(movie)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+          
+            return Response({'movie_data': serializer.data, 'liked': is_liked}, status=status.HTTP_200_OK)
         except Movie.DoesNotExist:
             return Response({"detail": "Data not found."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
@@ -80,6 +95,7 @@ class RecommendationsByDescription(generics.ListCreateAPIView):
         description_query = self.request.query_params.get("description")
         recommended_ids = get_recommendations(qtype = QueryType.TEXT, query= description_query, k= 100)
         queryset = Movie.objects.filter(id__in = recommended_ids)
+        queryset = queryset.filter(vote_count__gt=10) #Some strange movies show up when 0 votes are allowed
 
         return queryset
     
@@ -93,6 +109,7 @@ class RecommendationsByMovieIds(generics.ListCreateAPIView):
 
         recommended_ids = get_recommendations(qtype = QueryType.MOVIE, movie_ids = query_ids, k= 100)
         queryset = Movie.objects.filter(id__in = recommended_ids)
+        queryset = queryset.filter(vote_count__gt=10) #Some strange movies show up when 0 votes are allowed
 
         return queryset
     
@@ -110,6 +127,7 @@ class RecommendationsHybrid(generics.ListCreateAPIView):
         recommended_ids = get_recommendations(qtype = QueryType.HYBRID, query=description_query, movie_ids=query_ids, k=100)
 
         queryset = Movie.objects.filter(id__in = recommended_ids)
+        queryset = queryset.filter(vote_count__gt=10) #Some strange movies show up when 0 votes are allowed
 
         return queryset
 

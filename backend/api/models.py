@@ -50,9 +50,10 @@ class UserDelta(models.Model):
     alpha = models.FloatField()
     beta = models.FloatField()
 
-class MovieProb(models.Model):
-    movie_id = models.IntegerField()
-    alpha = models.FloatField()
-    beta = models.FloatField()
+class Like(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="likes")
+    movie_id = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name="likes")
     
-    # user_deltas: Dict { movie_id: {'alpha': 2.0, 'beta': 0.0} }
+    class Meta:
+        unique_together = (('user', 'movie_id'),)
+

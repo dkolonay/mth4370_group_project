@@ -11,7 +11,8 @@ WORKDIR /code
 
 # Install dependencies
 COPY ./requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
 # Install PostgreSQL client (for pg_isready)
 RUN apt-get update && apt-get install -y postgresql-client \

@@ -15,6 +15,7 @@ const MovieDetailsPage = () => {
   const [movieRecommendations, setMovieRecommendations] = useState([]);
   const [loadingMovie, setLoadingMovie] = useState(true);
   const [loadingRecommendations, setLoadingRecommendations] = useState(true);
+  const [liked, setLiked] = useState(false);
   const { id } = useParams();
 
   useEffect(() => {
@@ -23,7 +24,9 @@ const MovieDetailsPage = () => {
       .get(`/api/movie/${id}/`)
       .then((res) => res.data)
       .then((data) => {
-        setMovieData(data);
+        console.log(data.liked)
+        setMovieData(data.movie_data);
+        setLiked(data.liked);
         setLoadingMovie(false);
       })
       .catch((err) => console.error(err));
@@ -37,6 +40,21 @@ const MovieDetailsPage = () => {
       })
       .catch((err) => console.error(err));
   }, [id]);
+
+  const likeMovie = (e)=>{
+    e.preventDefault();
+    const movie_id = movieData.id
+     api
+      .post(`/api/user-actions/like/`, {movie_id})
+      .then((res) => {
+        console.log(res.status);
+        if (res.status === 201){
+          setLiked(true);
+        }
+      })
+      .catch((err) => console.error(err));
+
+  }
 
   return (
     <PageContainer>
@@ -67,7 +85,7 @@ const MovieDetailsPage = () => {
 
                 {movieData.genres.split(",", 6).map((genre)=>{
                   return (
-                  <p className={"genre-item"}>{genre}</p>
+                  <p key={genre} className={"genre-item"}>{genre}</p>
                 )
                 })}
                 </div>
@@ -76,6 +94,7 @@ const MovieDetailsPage = () => {
                   <p>{movieData.vote_average.toFixed(1)}</p>
                 </div>
                 <p>{movieData.vote_count} user ratings</p>
+                <button className={`like-button ${liked ? 'like-active' : ''}`} onClick={likeMovie}>Like</button>
               </div>
             </div>
           </div>
