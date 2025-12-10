@@ -4,7 +4,7 @@ from enum import Enum
 from django.conf import settings
 import pandas as pd
 
-from .bandit import ThomasSamplingBandit
+from .bandit import ThomasSamplingBandit, ActionType
 from .recommender import MovieRecommender
 from .sbert_encoder import MPNetEncoder
 from .recommendation_system import RecommendationSystem
@@ -47,3 +47,14 @@ def get_recommendations(
 
         case QueryType.HYBRID:
             return rec_sys.search_by_hybrid(query, movie_ids, user_deltas, k)
+        
+
+def bandit_interraction(
+            user_deltas: Dict[int, Dict[str, float]],
+            movie_id: int,
+            action_type: ActionType
+    ) -> Dict[str, float]:
+
+    updated_deltas = bandit.calculate_interaction(user_deltas, movie_id, action_type)
+    return updated_deltas['user_update']
+

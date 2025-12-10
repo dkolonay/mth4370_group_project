@@ -8,9 +8,9 @@ from enum import Enum
 class ActionType(Enum): #values to be decided
     # alpha, beta
     IGNORE = (0.0, 0.0)
-    CLICK = (0.0, 0.0)
-    LIKED = (0.0, 0.0)
-    DISLIKED = (0.0, 0.0)
+    CLICK = (1.0, 0.0)
+    LIKED = (2.0, 0.0)
+    DISLIKED = (0.0, 3.0)
 
 class Bandit(ABC):
     @abstractmethod

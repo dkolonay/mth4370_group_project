@@ -1,12 +1,16 @@
 import {Link, useLocation} from "react-router-dom"
+import {useContext, useEffect} from "react";
+import { AuthContext } from "../../AuthContext";
 
 import FilmStrip from "../FilmStrip/FilmStrip"
 import "./Navbar.css"
 import userIcon from "../../assets/img/user.png"
 
 const Navbar = ()=>{
+    const {token} = useContext(AuthContext)
     const location = useLocation()
     const currentPath = location.pathname;
+
     return(
         <div className={"nav-container"}>
             <FilmStrip />
@@ -16,7 +20,7 @@ const Navbar = ()=>{
                     <Link className={`navbar-standard-link ${currentPath == "/" ? "active-nav-link": ""}`} to ={"/"}>Browse</Link>
                     {/* <Link className={`navbar-standard-link ${currentPath == "/recommendations" ? "active-nav-link": ""}`} to ={"/recommendations"}>Recommendations</Link> */}
                 <div className={"login-wrapper"}>
-                    <Link className={"login-link"} to="/login">Sign in</Link>
+                    <Link className={"login-link"} to={token? "/logout" : "/login"}>{token ? "Logout" : "Sign in"}</Link>
                     <img className={"user-icon"} src={userIcon} alt="login" />
                 </div>
                 </div>

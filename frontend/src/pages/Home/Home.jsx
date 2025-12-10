@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState} from "react";
 import api from "../../api";
 // import Note from "../components/Note";
 import MovieList from "../../components/MovieList/MovieList";
@@ -11,13 +11,9 @@ import "./Home.css";
 const Home = () => {
   const [movies, setMovies] = useState([]);
   const [selectedMovies, setSelectedMovies] = useState([]);
-  
-  useEffect(() => {
-    getMovies();
-  }, []);
+
 
   const getMovies = (genres, sort_by, search, text_query, movie_ids, favorites) => {
-    console.log({genres, sort_by, search, text_query, movie_ids})
     if (sort_by === "None"){sort_by = null}
     api
       .get("/api/movies/", {

@@ -12,7 +12,7 @@ const MovieList = ({ movies, selectedMovies, cardType, addToSelection, removeFro
         if (cardType === "selector"){
           selected = selectedMovies.some(item => item.id === movie.id)
         }
-        return <MovieCard movie_data={movie} key={movie.id} cardType={cardType} addToSelection={addToSelection} removeFromSelection={removeFromSelection} selected={selected}/>;
+        return <MovieCard movie_data={movie} key={`${movie.id}card`} cardType={cardType} addToSelection={addToSelection} removeFromSelection={removeFromSelection} selected={selected}/>;
       })}
       </AnimatePresence>
     </div>

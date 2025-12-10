@@ -1,46 +1,86 @@
-from django.shortcuts import render
 from django.contrib.auth.models import User
-from django.db.models import Q
+from django.contrib.postgres.search import TrigramSimilarity
+from django.db.models import Q, OuterRef, Exists
 from rest_framework import generics
-from .serializers import UserSerializer, MovieSerializer, UserDeltaSerializer, LikeSerializer
+from .serializers import UserSerializer, MovieSerializer, UserDeltasSerializer, LikeSerializer, DislikeSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.exceptions import NotFound
+from rest_framework.views import APIView
 
-from .models import Movie, UserDelta, Like
-
-from .ml.model_interface import get_recommendations, QueryType
-#I want to initialize _REC_INSTANCE on startup
-
-class UserDeltaListCreate(generics.ListCreateAPIView):
-    serializer_class = UserDeltaSerializer
-    permission_classes = [IsAuthenticated]
-    
-
-    def perform_create(self, serializer):
-        if serializer.is_valid():
-            serializer.save(user = self.request.user)
-        else:
-            print(serializer.errors)
-
-    def get_queryset(self):
-        user = self.request.user
-        return UserDelta.objects.filter(user=user)
-    
+from .models import Movie, UserDeltas, Like, Dislike
+from .ml.bandit import ActionType
+from .ml.model_interface import get_recommendations, QueryType, bandit_interraction
+  
 class LikeListCreate(generics.ListCreateAPIView):
     serializer_class = LikeSerializer
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        print(self.request)
+
+        user = self.request.user
+        movie_id = self.request.data['movie_id']
+        user_deltas_obj, _ = UserDeltas.objects.get_or_create(user=user)
+        user_deltas_dict = user_deltas_obj.deltas_int_keys
+
+        print(user_deltas_dict)
+
+        updated_user_deltas = bandit_interraction(user_deltas_dict, movie_id, ActionType.LIKED)
+        user_deltas_obj.update_from_bandit(movie_id, updated_user_deltas)
+
         serializer.save(user = self.request.user)
-     
 
     def get_queryset(self):
         user = self.request.user
         return Like.objects.filter(user=user)
     
+class LikeRemove(generics.DestroyAPIView):
+    serializer_class = LikeSerializer
+    permission_classes = [IsAuthenticated]
 
+    def get_object(self):
+        user = self.request.user
+        movie_id = self.kwargs.get("movie_id")
+        try:
+            return Like.objects.get(user=user,movie_id=movie_id)
+        except Like.DoesNotExist:
+            raise NotFound("Like not found for this movie and user")
+    
+class DislikeListCreate(generics.ListCreateAPIView):
+    serializer_class = DislikeSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+
+        user = self.request.user
+        movie_id = self.request.data['movie_id']
+        user_deltas_obj, _ = UserDeltas.objects.get_or_create(user=user)
+        user_deltas_dict = user_deltas_obj.deltas_int_keys
+
+        print(user_deltas_dict)
+
+        updated_user_deltas = bandit_interraction(user_deltas_dict, movie_id, ActionType.DISLIKED)
+        user_deltas_obj.update_from_bandit(movie_id, updated_user_deltas)
+
+        serializer.save(user = self.request.user)
+
+    def get_queryset(self):
+        user = self.request.user
+        return Dislike.objects.filter(user=user)
+    
+class DislikeRemove(generics.DestroyAPIView):
+    serializer_class = DislikeSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        user = self.request.user
+        movie_id = self.kwargs.get("movie_id")
+        try:
+            return Dislike.objects.get(user=user,movie_id=movie_id)
+        except Dislike.DoesNotExist:
+            raise NotFound("Dislike not found for this movie and user")
+    
 class DisplayMovie(generics.ListCreateAPIView):
     serializer_class = MovieSerializer
     permission_classes = [AllowAny]
@@ -49,15 +89,15 @@ class DisplayMovie(generics.ListCreateAPIView):
         try:
             movie = Movie.objects.get(pk=pk)
             is_liked = Like.objects.filter(user=request.user, movie_id=pk).exists()
+            is_disliked = Dislike.objects.filter(user=request.user, movie_id=pk).exists()
             serializer = MovieSerializer(movie)
           
-            return Response({'movie_data': serializer.data, 'liked': is_liked}, status=status.HTTP_200_OK)
+            return Response({'movie_data': serializer.data, 'liked': is_liked, 'disliked': is_disliked}, status=status.HTTP_200_OK)
         except Movie.DoesNotExist:
             return Response({"detail": "Data not found."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
-
 class DisplayMovieList(generics.ListCreateAPIView):
     serializer_class = MovieSerializer
     permission_classes = [AllowAny]
@@ -90,7 +130,7 @@ class DisplayMovieList(generics.ListCreateAPIView):
         filters &= Q(vote_count__gt=10)
 
         return filters
-        
+    
     def get_queryset(self):
         genres = self.request.query_params.get("genres")
         search_query = self.request.query_params.get("search")
@@ -115,18 +155,37 @@ class DisplayMovieList(generics.ListCreateAPIView):
         
         queryset = Movie.objects.filter(self.generate_filters(genres, search_query, recommended_ids, filter_favorites))
 
- 
+       
+
         if sort_by:
             queryset = queryset.order_by(sort_by, "-popularity")
-        else:
-            queryset = queryset.order_by("-popularity")
 
+        user = self.request.user
+        if user.is_authenticated:
+            liked_subquery = Like.objects.filter(
+                movie_id=OuterRef('pk'),
+                user=self.request.user
+                )
+            disliked_subquery = Dislike.objects.filter(
+                movie_id=OuterRef('pk'),
+                user=self.request.user
+            )
+            queryset = queryset.annotate(liked = Exists(liked_subquery), disliked = Exists(disliked_subquery))
+    
         return queryset[:100]
     
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all() #disallow create of usernames that already exist
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
+
+class MeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
+    
 
 
 

@@ -3,7 +3,6 @@ import "./Search.css"
 import searchIcon from "../../assets/img/search.png"
 
 const Search = ({setSearchQuery})=>{
-    const [query, setQuery] = useState("")
     const timeoutRef = useRef(null);
 
     const updateQuery = useCallback((e)=>{

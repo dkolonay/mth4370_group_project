@@ -7,7 +7,8 @@ const SelectedMovieItem = ({movieData, removeFromSelection})=>{
         layout
         initial={{ opacity: 0 }} 
         animate={{ opacity: 1 }}
-        transition={{duration: 0.3}}
+        transition={{duration: 0.4}}
+        exit={{ opacity: 0, scale: 0.8 }} 
         className={"selected-movie-item"} 
         onClick={()=>{removeFromSelection(movieData.id)}}>
             <img className={"selected-image"} src={`https://image.tmdb.org/t/p/original/${movieData.poster_path}`} alt={movieData.title} />
