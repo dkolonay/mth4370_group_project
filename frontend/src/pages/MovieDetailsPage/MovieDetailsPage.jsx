@@ -32,7 +32,7 @@ const MovieDetailsPage = () => {
       .catch((err) => console.error(err));
 
     api
-      .get(`/api/recommendations/by-id/?movie_ids=${id}`)
+      .get(`/api/movies/`, {params: {movie_ids: id}})
       .then((res) => res.data)
       .then((data) => {
         setMovieRecommendations(data);

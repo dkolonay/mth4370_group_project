@@ -12,72 +12,30 @@ const Home = () => {
   const [movies, setMovies] = useState([]);
   const [selectedMovies, setSelectedMovies] = useState([]);
   
-
   useEffect(() => {
     getMovies();
   }, []);
 
-  const getMovies = (queryString = "") => {
+  const getMovies = (genres, sort_by, search, text_query, movie_ids, favorites) => {
+    console.log({genres, sort_by, search, text_query, movie_ids})
+    if (sort_by === "None"){sort_by = null}
     api
-      .get(`/api/movies/${queryString}`)
+      .get("/api/movies/", {
+        params: {
+          genres: genres ? genres : null,
+          sort_by: sort_by ? sort_by : null,
+          search: search ? search : null,
+          text_query: text_query ? text_query : null,
+          movie_ids: movie_ids ? movie_ids : null,
+          favorites: favorites ? "true" : null
+        }
+      })
       .then((res) => res.data)
       .then((data) => {
         setMovies(data);
       })
       .catch((err) => console.error(err));
   };
-
-    const handleTextRec = (textQuery) => {
- 
-    console.log(`/api/recommendations/by-description/?description=${textQuery}`);
-    api
-      .get(`/api/recommendations/by-description/?description=${textQuery}`)
-      .then((res) => res.data)
-      .then((data) => {
-        setMovies(data);
-      })
-      .catch((err) => console.error(err));
-  };
-
-    const handleIdRec = (movieIds) => {
-  
-    const ids_string = movieIds.join(",")
-    console.log(`/api/recommendations/by-id/?movie_ids=${ids_string}`);
-    api
-      .get(`/api/recommendations/by-id/?movie_ids=${ids_string}`)
-      .then((res) => res.data)
-      .then((data) => {
-        setMovies(data);
-      })
-      .catch((err) => console.error(err));
-  };
-
-    const handleHybridRec = (movieIds, textQuery) => {
-
-    const ids_string = movieIds.join(",")
-    console.log(`/api/recommendations/hybrid/?movie_ids=${ids_string}&description=${textQuery}`);
-    api
-      .get(`/api/recommendations/hybrid/?movie_ids=${ids_string}&description=${textQuery}`)
-      .then((res) => res.data)
-      .then((data) => {
-        setMovies(data)
-      })
-      .catch((err) => console.error(err));
-  };
-
-  const getRecommendations = (movieIds, textQuery) =>{
-    const isIdSearch = movieIds.length > 0;
-    const isTextSearch = textQuery.length > 0;
-    if (isIdSearch && isTextSearch){
-      handleHybridRec(movieIds, textQuery)
-    } else if(isIdSearch){
-      handleIdRec(movieIds)
-    } else if(isTextSearch){
-      handleTextRec(textQuery)
-    } else {
-      alert("Invalid recommendation search")
-    }
-  }
 
   const addToSelection = (clicked_movie_id)=>{
       setSelectedMovies((prevMovies)=>{
@@ -96,7 +54,7 @@ const Home = () => {
         <h1 className="home-title">Browse Movies</h1>
         <div className={"home-container"}>
         <MovieList movies={movies} selectedMovies={selectedMovies} cardType={"selector"} addToSelection={addToSelection} removeFromSelection={removeFromSelection}/>
-        <Controls getMovies={getMovies} selectedMovieData={selectedMovies} removeFromSelection={removeFromSelection} getRecommendations={getRecommendations}/>
+        <Controls getMovies={getMovies} selectedMovieData={selectedMovies} removeFromSelection={removeFromSelection}/>
         </div>
       </ContentContainer>
     </PageContainer>

@@ -5,7 +5,7 @@ import Search from "../Search/Search";
 import SelectedMovieItem from "./SelectedMovieItem/SelectedMovieItem";
 import {AnimatePresence} from "motion/react"
 
-const Controls = ({ getMovies, selectedMovieData, removeFromSelection, getRecommendations }) => {
+const Controls = ({ getMovies, selectedMovieData, removeFromSelection }) => {
   const [sortType, setSortType] = useState("-popularity");
   const [searchQuery, setSearchQuery] = useState("");
   const [genres, setGenres] = useState([
@@ -30,24 +30,23 @@ const Controls = ({ getMovies, selectedMovieData, removeFromSelection, getRecomm
     { name: "Western", selected: false },
   ]);
   const [textQuery, setTextQuery] = useState("");
+  const [filterFavorites, setFilterFavorites] = useState(false)
 
-  useEffect(() => {
-    let queryString = `?sort_by=${sortType}`;
-    const selectedGenreList = genres
+  const parseGenreList = ()=>{
+    return genres
       .filter((genre) => genre.selected)
       .map((genre) => genre.name)
       .join(",");
+  }
+  const handleGetMovies = ()=>{
+    const selectedGenres = parseGenreList()
+    const movieIds = selectedMovieData.map((movie)=>movie.id).join(",")
+    getMovies(selectedGenres, sortType, searchQuery, textQuery, movieIds, filterFavorites);
+  }
 
-    if (searchQuery) {
-      queryString += `&search=${searchQuery}`;
-    }
-
-    if (selectedGenreList.length > 0) {
-      queryString += `&genres=${selectedGenreList}`;
-    }
-
-    getMovies(queryString);
-  }, [genres, sortType, searchQuery]);
+  useEffect(() => {
+    handleGetMovies()
+  }, [genres, sortType, searchQuery, filterFavorites]);
 
   const toggleGenre = (name) => {
     setGenres((prevGenres) => {
@@ -66,7 +65,7 @@ const Controls = ({ getMovies, selectedMovieData, removeFromSelection, getRecomm
     const movieIds = selectedMovieData.map((movie)=>movie.id)
 
     if (movieIds.length > 0 || textQuery.length > 0){
-      getRecommendations(movieIds, textQuery)
+      handleGetMovies()
     } else{
       alert("Select movies or make a text query to get recommendations")
     }
@@ -87,6 +86,7 @@ const Controls = ({ getMovies, selectedMovieData, removeFromSelection, getRecomm
               setSortType(e.target.value);
             }}
           >
+            <option value="None">None</option>
             <option value="-popularity">Popularity (Highest first)</option>
             <option value="popularity">Popularity (Lowest first)</option>
             <option value="-vote_average">Rating (Highest first)</option>
@@ -114,6 +114,8 @@ const Controls = ({ getMovies, selectedMovieData, removeFromSelection, getRecomm
             );
           })}
         </ul>
+        <p>show only favorites</p>
+        <input type="checkbox" value={filterFavorites} onChange={()=>{setFilterFavorites((prev)=>!prev)}}/>
         <div className={"divider"}></div>
         <h3>Get Recommendations</h3>
         <textarea className={"text-query"} name="text-query" id="text-query" value={textQuery} onChange={(e)=>{setTextQuery(e.target.value)}} placeholder="Examples: &#10;I want to watch a cozy Christmas movie&#10;Light-hearted comedy set in New York City"></textarea>

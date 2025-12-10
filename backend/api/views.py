@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
+from django.db.models import Q
 from rest_framework import generics
-from .serializers import UserSerializer, NoteSerializer, MovieSerializer, UserDeltaSerializer, LikeSerializer
+from .serializers import UserSerializer, MovieSerializer, UserDeltaSerializer, LikeSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework import status
@@ -57,7 +58,7 @@ class DisplayMovie(generics.ListCreateAPIView):
             return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 
-class DisplayMovies(generics.ListCreateAPIView):
+class DisplayMovieList(generics.ListCreateAPIView):
     serializer_class = MovieSerializer
     permission_classes = [AllowAny]
 
@@ -66,72 +67,62 @@ class DisplayMovies(generics.ListCreateAPIView):
     
     def search_filter(self, queryset, searchQuery):
         return queryset.filter(title__icontains=searchQuery)
+    
+    def generate_filters(self, genres, search_query, recommended_ids, filter_favorites):
+        filters = Q()
 
-    def get_queryset(self):
-        queryset = Movie.objects.all()
+        if recommended_ids:
+            filters &= Q(id__in=recommended_ids)
 
-        genres = self.request.query_params.get("genres")
-        if genres != None:
-            for genre in genres.split(","):
-                queryset = self.filter_by_genre(queryset, genre)
+        if filter_favorites:
+            filters &= Q(likes__user=self.request.user)
 
-        searchQuery = self.request.query_params.get("search")
-        if searchQuery != None:
-            queryset = self.search_filter(queryset, searchQuery)
+        if genres:
+            genre_list = [g.strip() for g in genres.split(",")]
+            q_genres = Q()
+            for g in genre_list:
+                q_genres &= Q(genres__icontains=g)  
+            filters &= q_genres
+
+        if search_query:
+            filters &= Q(title__icontains=search_query)
+
+        filters &= Q(vote_count__gt=10)
+
+        return filters
         
+    def get_queryset(self):
+        genres = self.request.query_params.get("genres")
+        search_query = self.request.query_params.get("search")
         sort_by = self.request.query_params.get("sort_by")
+        text_query = self.request.query_params.get("text_query")
+        filter_favorites = self.request.query_params.get("favorites")
+  
+        movie_ids_query = self.request.query_params.get("movie_ids")
+        query_ids = None
+
+        if movie_ids_query:
+            query_ids = [int(id_string) for id_string in movie_ids_query.split(",")]
+
+        recommended_ids = []
+
+        if text_query and query_ids:
+            recommended_ids = get_recommendations(qtype= QueryType.HYBRID, query=text_query, movie_ids=query_ids, k=100)
+        elif text_query:
+            recommended_ids = get_recommendations(qtype=QueryType.TEXT, query = text_query, k = 100)
+        elif query_ids:
+            recommended_ids = get_recommendations(qtype=QueryType.MOVIE, movie_ids=query_ids, k = 100)
+        
+        queryset = Movie.objects.filter(self.generate_filters(genres, search_query, recommended_ids, filter_favorites))
+
+ 
         if sort_by:
             queryset = queryset.order_by(sort_by, "-popularity")
         else:
             queryset = queryset.order_by("-popularity")
+
         return queryset[:100]
     
-
-class RecommendationsByDescription(generics.ListCreateAPIView):
-    serializer_class = MovieSerializer
-    permission_classes = [AllowAny]
-   
-    def get_queryset(self):
-        description_query = self.request.query_params.get("description")
-        recommended_ids = get_recommendations(qtype = QueryType.TEXT, query= description_query, k= 100)
-        queryset = Movie.objects.filter(id__in = recommended_ids)
-        queryset = queryset.filter(vote_count__gt=10) #Some strange movies show up when 0 votes are allowed
-
-        return queryset
-    
-class RecommendationsByMovieIds(generics.ListCreateAPIView):
-    serializer_class = MovieSerializer
-    permission_classes = [AllowAny]
-
-    def get_queryset(self):
-        movie_ids_query = self.request.query_params.get("movie_ids")
-        query_ids = [int(id_string) for id_string in movie_ids_query.split(",")]
-
-        recommended_ids = get_recommendations(qtype = QueryType.MOVIE, movie_ids = query_ids, k= 100)
-        queryset = Movie.objects.filter(id__in = recommended_ids)
-        queryset = queryset.filter(vote_count__gt=10) #Some strange movies show up when 0 votes are allowed
-
-        return queryset
-    
-class RecommendationsHybrid(generics.ListCreateAPIView):
-    serializer_class = MovieSerializer
-    permission_classes = [AllowAny]
-
-    def get_queryset(self):
-
-        movie_ids_query_string = self.request.query_params.get("movie_ids")
-        query_ids = [int(id_string) for id_string in movie_ids_query_string.split(",")]
-
-        description_query = self.request.query_params.get("description")
-
-        recommended_ids = get_recommendations(qtype = QueryType.HYBRID, query=description_query, movie_ids=query_ids, k=100)
-
-        queryset = Movie.objects.filter(id__in = recommended_ids)
-        queryset = queryset.filter(vote_count__gt=10) #Some strange movies show up when 0 votes are allowed
-
-        return queryset
-
-
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all() #disallow create of usernames that already exist
     serializer_class = UserSerializer

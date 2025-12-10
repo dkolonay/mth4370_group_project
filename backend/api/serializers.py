@@ -1,7 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Note
 from .models import Movie
 from .models import UserDelta
 from .models import Like
@@ -16,13 +15,11 @@ class UserSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         return user
     
-
-class NoteSerializer(serializers.ModelSerializer):
+class MovieSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Note
-        fields = ["id", "title", "content", "created_at", "author"]
-        extra_kwargs = {"author": {"read_only": True}} #author name can be read but not changed
-
+        model = Movie
+        fields = '__all__'
+    
 class UserDeltaSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserDelta
@@ -36,8 +33,3 @@ class LikeSerializer(serializers.ModelSerializer):
         extra_kwargs = {"user": {"read_only": True}}
 
 
-
-class MovieSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Movie
-        fields = '__all__'
