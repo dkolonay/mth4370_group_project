@@ -27,8 +27,6 @@ class QueryType(Enum):
     MOVIE = 2
     HYBRID = 3
 
-
-
 def get_recommendations(
         qtype: QueryType,
         query: str = None,
