@@ -4,36 +4,25 @@ import { useNavigate, Link } from "react-router-dom";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../../constants";
 import "./Form.css"
 import LoadingIndicator from "../LoadingIndicator/LoadingIndicator";
+import { useContext } from "react";
+import { AuthContext } from "../../AuthContext";
 
-const Form = ({ route, method }) => {
+const Form = ({ method }) => {
+  const {login, register} = useContext(AuthContext)
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
   const isLogin = method === "login";
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    setLoading(true);
-
-    try {
-        const res = await api.post(route, {username, password})
-        if(isLogin){
-            localStorage.setItem(ACCESS_TOKEN, res.data.access)
-            localStorage.setItem(REFRESH_TOKEN, res.data.refresh)
-            navigate("/")
-        } else{
-            navigate("/login")
-        }
-
-    } catch (error) {
-      alert(error);
-    } finally {
-      setLoading(false);
+  const handleSubmit = (e)=>{
+    e.preventDefault()
+    if (isLogin){
+      login(username, password)
+    } else {
+      register(username, password)
     }
-  };
+  }
 
   return (
     <form onSubmit={handleSubmit} className={"form-container"}>
@@ -48,7 +37,7 @@ const Form = ({ route, method }) => {
         placeholder="Username"
       />
       <input
-        type="text"
+        type="password"
         className={"form-input"}
         value={password}
         onChange={(e) => {

@@ -2,8 +2,9 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    --base-color: rgb(212, 209, 176);
+    --base-color: rgb(255, 255, 255);
     --pop-color: rgb(190, 183, 102);
+    --card-shadow: 2px 3px 5px rgb(39, 39, 39), 0px 0px 10px rgba(39, 39, 39, 0.384);
 
 }
 
@@ -11,5 +12,5 @@ html, body, #root{
     width: 100%;
     overflow-x: hidden;
     font-family: Arial, sans-serif;
-    background-color: var(--base-color);
+    background-color: rgb(255, 255, 255);
 }

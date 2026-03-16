@@ -1,0 +1,38 @@
+.selected-movie-item{
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1rem;
+    list-style: none;
+    background-color: rgb(255, 255, 255);
+    width: 100%;
+    box-shadow: 1px 1px 3px rgba(56, 56, 56, 0.507);
+}
+
+.selected-image{
+    aspect-ratio: 67/98;
+    height: 100%;
+}
+
+.selected-title{
+    font-weight: bold;
+      overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Number of lines to show */
+  line-clamp: 2; /* Standard property, but -webkit-line-clamp is widely supported */
+  -webkit-box-orient: vertical;
+}
+
+.selected-list-remove{
+    display:block;
+    margin-left: auto;
+    cursor: pointer;
+    height: 100%;
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}

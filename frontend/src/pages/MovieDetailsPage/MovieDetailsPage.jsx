@@ -15,6 +15,8 @@ const MovieDetailsPage = () => {
   const [movieRecommendations, setMovieRecommendations] = useState([]);
   const [loadingMovie, setLoadingMovie] = useState(true);
   const [loadingRecommendations, setLoadingRecommendations] = useState(true);
+  const [liked, setLiked] = useState(false);
+  const [disliked, setDisliked] = useState(false);
   const { id } = useParams();
 
   useEffect(() => {
@@ -23,13 +25,15 @@ const MovieDetailsPage = () => {
       .get(`/api/movie/${id}/`)
       .then((res) => res.data)
       .then((data) => {
-        setMovieData(data);
+        setMovieData(data.movie_data);
+        setLiked(data.liked);
+        setDisliked(data.disliked)
         setLoadingMovie(false);
       })
       .catch((err) => console.error(err));
 
     api
-      .get(`/api/recommendations/by-id/?movie_ids=${id}`)
+      .get(`/api/movies/`, {params: {movie_ids: id}})
       .then((res) => res.data)
       .then((data) => {
         setMovieRecommendations(data);
@@ -38,11 +42,65 @@ const MovieDetailsPage = () => {
       .catch((err) => console.error(err));
   }, [id]);
 
+  const likeMovie = (e)=>{
+    e.preventDefault();
+    const movie_id = movieData.id
+     api
+      .post(`/api/user-actions/like/`, {movie_id})
+      .then((res) => {
+        if (res.status === 201){
+          setLiked(true);
+        }
+      })
+      .catch((err) => console.error(err));
+
+  }
+
+  const removeLikeMovie = (e)=>{
+    e.preventDefault();
+    const movie_id = movieData.id
+     api
+      .delete(`/api/user-actions/like/remove/${movie_id}/`)
+      .then((res) => {
+        if (res.status === 204){
+          setLiked(false);
+        }
+      })
+      .catch((err) => console.error(err));
+
+  }
+
+  const dislikeMovie = (e)=>{
+    e.preventDefault();
+    const movie_id = movieData.id
+     api
+      .post(`/api/user-actions/dislike/`, {movie_id})
+      .then((res) => {
+        if (res.status === 201){
+          setDisliked(true);
+        }
+      })
+      .catch((err) => console.error(err));
+
+  }
+
+  const removeDislikeMovie = (e)=>{
+    e.preventDefault();
+    const movie_id = movieData.id
+     api
+      .delete(`/api/user-actions/dislike/remove/${movie_id}/`)
+      .then((res) => {
+        if (res.status === 204){
+          setDisliked(false);
+        }
+      })
+      .catch((err) => console.error(err));
+
+  }
+
   return (
     <PageContainer>
-      {loadingMovie ? (
-        <LoadingIndicator />
-      ) : (
+      {!loadingMovie && (
         <div className={"detail-page"}>
           <div className={"details-header"}>
             <div className={"banner-container"}>
@@ -67,7 +125,7 @@ const MovieDetailsPage = () => {
 
                 {movieData.genres.split(",", 6).map((genre)=>{
                   return (
-                  <p className={"genre-item"}>{genre}</p>
+                  <p key={genre} className={"genre-item"}>{genre}</p>
                 )
                 })}
                 </div>
@@ -76,6 +134,8 @@ const MovieDetailsPage = () => {
                   <p>{movieData.vote_average.toFixed(1)}</p>
                 </div>
                 <p>{movieData.vote_count} user ratings</p>
+                <button className={`action-button like-button ${liked ? 'like-active' : ''}`} onClick={liked? removeLikeMovie : likeMovie}>Like</button>
+                <button className={`action-button dislike-button ${disliked ? 'dislike-active' : ''}`} onClick={disliked ? removeDislikeMovie : dislikeMovie}>Not Interested</button>
               </div>
             </div>
           </div>
@@ -85,8 +145,8 @@ const MovieDetailsPage = () => {
           ) : (
             <ContentContainer>
             <div className={"recommendations-area"}>
-              <h2>Check out similar films</h2>
-              <MovieList movies={movieRecommendations} cardType={"link"} />
+              <h2 className={"rec-title"}>Check out similar films</h2>
+              <MovieList movies={movieRecommendations} cardType={"basic"} />
             </div>
             </ContentContainer>
           )}

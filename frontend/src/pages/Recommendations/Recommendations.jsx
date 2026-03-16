@@ -61,8 +61,6 @@ const Recommendations = () => {
     })
   }
 
-console.log(selectedMovieIds)
-
   useEffect(() => {
     api
       .get(`/api/movies/`)

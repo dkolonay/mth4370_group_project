@@ -3,6 +3,8 @@
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 2rem;
   margin: auto;
-  margin-bottom: 6px; 
-  width: 100%;
+  margin-top: 0;
+  width: 90%;
+  flex-grow: 1;
+  padding-bottom: 10px;
 }

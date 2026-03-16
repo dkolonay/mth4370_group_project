@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState} from "react";
 import api from "../../api";
 // import Note from "../components/Note";
 import MovieList from "../../components/MovieList/MovieList";
@@ -10,14 +10,22 @@ import "./Home.css";
 
 const Home = () => {
   const [movies, setMovies] = useState([]);
+  const [selectedMovies, setSelectedMovies] = useState([]);
 
-  useEffect(() => {
-    getMovies();
-  }, []);
 
-  const getMovies = (queryString = "") => {
+  const getMovies = (genres, sort_by, search, text_query, movie_ids, favorites) => {
+    if (sort_by === "None"){sort_by = null}
     api
-      .get(`/api/movies/${queryString}`)
+      .get("/api/movies/", {
+        params: {
+          genres: genres ? genres : null,
+          sort_by: sort_by ? sort_by : null,
+          search: search ? search : null,
+          text_query: text_query ? text_query : null,
+          movie_ids: movie_ids ? movie_ids : null,
+          favorites: favorites ? "true" : null
+        }
+      })
       .then((res) => res.data)
       .then((data) => {
         setMovies(data);
@@ -25,11 +33,25 @@ const Home = () => {
       .catch((err) => console.error(err));
   };
 
+  const addToSelection = (clicked_movie_id)=>{
+      setSelectedMovies((prevMovies)=>{
+        return [...prevMovies, movies.find((movie)=>movie.id == clicked_movie_id)]
+      })
+  }
+
+  const removeFromSelection = (clicked_movie_id)=>{
+    setSelectedMovies((prevMovies)=>{
+      return prevMovies.filter((movie)=>movie.id != clicked_movie_id)
+    })
+  }
   return (
     <PageContainer>
       <ContentContainer>
-        <Controls getMovies={getMovies} />
-        <MovieList movies={movies} cardType={"link"} />
+        <h1 className="home-title">Browse Movies</h1>
+        <div className={"home-container"}>
+        <MovieList movies={movies} selectedMovies={selectedMovies} cardType={"selector"} addToSelection={addToSelection} removeFromSelection={removeFromSelection}/>
+        <Controls getMovies={getMovies} selectedMovieData={selectedMovies} removeFromSelection={removeFromSelection}/>
+        </div>
       </ContentContainer>
     </PageContainer>
   );

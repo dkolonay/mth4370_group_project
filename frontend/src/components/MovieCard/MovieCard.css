@@ -1,5 +1,5 @@
 .movie-card{
-    box-shadow: 3px 3px 5px rgb(39, 39, 39);
+    box-shadow: var(--card-shadow);
     text-align: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     background-color: white;
@@ -8,7 +8,7 @@
 
 .movie-card:hover{
     cursor:pointer;
-    transform: scale(1.02);
+    transform: scale(1.01);
     transform-origin: center center;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 4px 4px 7px rgb(48, 48, 48);
@@ -27,7 +27,7 @@
      border-top-right-radius: 4px;
 }
 
-.movie-card img{
+.movie-card-image{
     width: 100%;
     height: 100%;
     margin: 0;
@@ -39,8 +39,10 @@
     aspect-ratio: 67/98;
 }
 
+
+
 .movie-card-details{
-    min-height: 4rem;
+    height: 5.5rem;
     padding: 10px;
     display: flex;
     flex-direction: column;
@@ -50,20 +52,73 @@
 
 }
 
+.movie-card-title{
+display: -webkit-box;       
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;     
+  overflow: hidden;          
+  text-overflow: ellipsis; 
+}
 
-.movie-card-select-overlay {
+.add-to-search{
+    background-color: rgb(50, 50, 102);
+    border: none;
+    color: white;
+    padding: 5px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 0.8rem;
+}
+
+.cut-from-search{
+    background-color: rgb(105, 20, 20);
+}
+
+.add-to-search:hover{
+    background-color: rgb(94, 94, 194);
+    transition: background-color 0.3s ease;
+}
+
+.card-actions{
+    display: flex;
+    flex-direction: row;
+    margin-top: auto;
+    padding-bottom: 10px;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    border-top: 1px solid gray;
+    padding-top: 10px;
     width: 100%;
-    height: 100%;
-    position: absolute;
-    z-index: 2;
-    background-color: rgba(211, 185, 69, 0.678);
-    aspect-ratio: 67/98;
-    opacity: 0;
+}
+
+.card-icon{
+    aspect-ratio: 1;
+    width: 25px;
+    opacity: 30%;
+}
+
+.card-like{
+     transition: opacity 0.3s ease;
+}
+
+.card-dislike{
+    transform: rotate(180deg);
     transition: opacity 0.3s ease;
 }
 
-.remove-transparency{
-    opacity: 1;
-    transition: opacity 0.2s ease;
+.card-dislike:hover{
+   transform: rotate(180deg) scale(1.1);
 }
+
+.card-like:hover{
+    transform: scale(1.1);
+}
+
+.card-action-active {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
 

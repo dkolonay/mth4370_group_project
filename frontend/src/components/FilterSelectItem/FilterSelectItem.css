@@ -5,15 +5,14 @@
   border: 2px solid rgb(73, 101, 179);
   border-radius: 36px;
   height: 2rem;
-  width: 100px;
   height: 16px;
-  display: flex;
-  flex-direction: column;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 10px;
   cursor: pointer;
   transition: background-color 0.3s ease, color 0.3s ease;
+  margin: 2px;
 }
 
 .filter-selected, .filter-select-item:hover{
